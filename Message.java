@@ -25,4 +25,26 @@ public class Message implements Serializable {
     	this.text = text;
     	this.id = ++count;
     }
+
+    // getters
+    public int getID() {
+    	return id;
+    }
+    
+    public MessageType getType() {
+    	
+    	return type;
+    }
+    
+    public MessageStatus getStatus() {
+    	
+    	return status;
+    }
+    
+    public String getText() {
+    	
+    	return text;
+    }
 }
+    
+
