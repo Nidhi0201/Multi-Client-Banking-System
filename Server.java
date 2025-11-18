@@ -34,8 +34,7 @@ public class Server {
 				// accept a connection on the socket
 				var socket = ss.accept();
 
-				// when there is a connection, the pool creates a new handler that uses socket
-				// (current connection)
+				// when there is a connection, the pool creates a new handler that uses socket (current connection)
 				pool.execute(new ClientHandler(socket, employeeFile, logFile, proFile, accountFile ));
 				
 
