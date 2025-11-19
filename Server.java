@@ -31,7 +31,8 @@ public class Server {
 				// accept a connection on the socket
 				var socket = ss.accept();
 
-				// when there is a connection, the pool creates a new handler that uses socket (current connection)
+				// when there is a connection, the pool creates a new handler that uses socket
+				// (current connection)
 				pool.execute(new ClientHandler(socket, employeeFile, logFile, proFile, accountFile ));
 				
 
@@ -52,9 +53,11 @@ class ClientHandler implements Runnable {
 
 	// constructor takes the socket connection
 	public ClientHandler(Socket s, File employees, File log, File profiles, File accounts) {
-		this.socket = s;
-		this.logFile = log;
-		//!
+		socket = s;
+		logFile = log;
+		employeeFile = employees;
+		proFile = profiles;
+		accountFile = accounts;
 	}
 
 	@Override
@@ -69,14 +72,22 @@ class ClientHandler implements Runnable {
 			Message msg = null;
 			MessageType type = MessageType.undefined;
 			Application sender = Application.undefined;
+			Boolean loggedIn = false;
 
+			System.out.println("New Connection"); // TODO maybe remove
+			
 			// loop that listens for messages
 			while (true) {
-
+				
 				// read new message
 				msg = (Message) inputStream.readObject();
+				
+				// until the client is logged in
+				while(!loggedIn) {
+					
+				}
 
-				// message status must be a request to get attention
+				// message status must be a request
 				if (msg.getStatus() != MessageStatus.request) {
 					// loop again
 					continue;
@@ -101,6 +112,7 @@ class ClientHandler implements Runnable {
 						
 						// if the ATM sent the message call ATM()
 						if (sender == Application.ATM ) {
+							System.out.println("ATM Message");
 							ATM(msg);
 							continue;
 						}
@@ -130,8 +142,12 @@ class ClientHandler implements Runnable {
 	private void ATM(Message msg){
 		// store type
 		MessageType type = msg.getType();
+		System.out.println("Client said: " + msg.getText()); //TODO
 		
-		// first message has to be login
+		// if the message isn't login get a new one
+		if (msg.getType() != MessageType.login) {
+			return;
+		}
 		
 		/*
 		switch (type) {
