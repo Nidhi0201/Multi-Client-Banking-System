@@ -10,7 +10,7 @@ public class Message implements Serializable {
 	private final MessageType type; 	  // login, text, logout, undefined
     private final MessageStatus status;                // success, error, request, lowercase, uppercase
     private final String text;
-    private final long number;
+    private final String number; // String variable  so null can pass, server will use parseInt
     private final Application sender;
     
     // messages with no parameters
@@ -19,11 +19,11 @@ public class Message implements Serializable {
         this.type = MessageType.undefined;
         this.status = MessageStatus.undefined;
         this.text = "undefined";
-        this.number = 0;
+        this.number = "";
         this.sender = Application.undefined;
     }
     
-    public Message(MessageStatus status, MessageType type, Application app, int num, String text) {
+    public Message(MessageStatus status, MessageType type, Application app, String num, String text) {
     	this.type = type;
     	this.status = status;
     	this.text = text;
@@ -52,7 +52,7 @@ public class Message implements Serializable {
     	return text;
     }
     
-    public long getNum() {
+    public String getNum() {
     	return number;
     }
     
