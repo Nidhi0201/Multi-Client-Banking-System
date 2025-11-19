@@ -10,6 +10,8 @@ public class ATM {
 		int port = 777;
 		Scanner scan = new Scanner(System.in); // temporary, we will use GUI for input
 	
+		// get the client's ip address store in ip
+		
 		// Socket that connects to the ip and port
 		Socket socket = new Socket(ip, port);
 		System.out.println("Connected to " + ip + ":" + port);

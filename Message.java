@@ -55,6 +55,11 @@ public class Message implements Serializable {
     public long getNum() {
     	return number;
     }
+    
+    public Application getSender() {
+    	return sender;
+    	
+    }
 }
     
 
