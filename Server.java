@@ -72,15 +72,22 @@ class ClientHandler implements Runnable {
 			Message msg = null;
 			MessageType type = MessageType.undefined;
 			Application sender = Application.undefined;
+			Boolean loggedIn = false;
 
 			System.out.println("New Connection"); // TODO maybe remove
+			
 			// loop that listens for messages
 			while (true) {
 				
 				// read new message
 				msg = (Message) inputStream.readObject();
+				
+				// until the client is logged in
+				while(!loggedIn) {
+					
+				}
 
-				// message status must be a request to get attention
+				// message status must be a request
 				if (msg.getStatus() != MessageStatus.request) {
 					// loop again
 					continue;
@@ -137,7 +144,10 @@ class ClientHandler implements Runnable {
 		MessageType type = msg.getType();
 		System.out.println("Client said: " + msg.getText()); //TODO
 		
-		// first message has to be login
+		// if the message isn't login get a new one
+		if (msg.getType() != MessageType.login) {
+			return;
+		}
 		
 		/*
 		switch (type) {

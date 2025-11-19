@@ -7,10 +7,10 @@ import homeworks.HW5.HW5_type;
 public class Message implements Serializable {
 	private static int count = 0;
 	private final int id;
-	private final MessageType type; 	  // login, text, logout, undefined
-    private final MessageStatus status;                // success, error, request, lowercase, uppercase
+	private final MessageType type;
+    private final MessageStatus status;
     private final String text;
-    private final String number; // String variable  so null can pass, server will use parseInt
+    private final String number; // this is a String variable so null can pass, the server will use parseInt
     private final Application sender;
     
     // messages with no parameters
