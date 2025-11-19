@@ -15,12 +15,9 @@ public class Server {
 	private static File accountFile = new File("accounts.txt");
 	
 	public static void main(String args[]) throws IOException {
-		
-		
-		
 
 		// make a server socket on the port number
-		try (ServerSocket ss = new ServerSocket(7777)) {
+		try (ServerSocket ss = new ServerSocket(777)) {
 
 			// confirmation message
 			System.out.println("Server is running ");
@@ -48,10 +45,16 @@ class ClientHandler implements Runnable {
 
 	// has a socket attribute for the current connection
 	private Socket socket;
+	private static File logFile; 
+	private static File employeeFile;
+	private static File proFile;
+	private static File accountFile;
 
 	// constructor takes the socket connection
 	public ClientHandler(Socket s, File employees, File log, File profiles, File accounts) {
 		this.socket = s;
+		this.logFile = log;
+		//!
 	}
 
 	@Override
@@ -65,6 +68,7 @@ class ClientHandler implements Runnable {
 			// create variables outside of loop
 			Message msg = null;
 			MessageType type = MessageType.undefined;
+			Application sender = Application.undefined;
 
 			// loop that listens for messages
 			while (true) {
@@ -77,7 +81,6 @@ class ClientHandler implements Runnable {
 					// loop again
 					continue;
 				}
-
 				// if message status is request
 				else {
 					// if type is undefined restart loop
@@ -85,61 +88,106 @@ class ClientHandler implements Runnable {
 						continue;
 					}
 					
+					
+					
+					
+					
+					
 					// if message status is request and type is !undefined
 					else {
 						
+						// check if it is from the ATM or Teller
+						sender = msg.getSender();
 						
+						// if the ATM sent the message call ATM()
+						if (sender == Application.ATM ) {
+							ATM(msg);
+							continue;
+						}
 						
-					// first message will always be a login
+						// if the Teller sent the message call Teller()
+						else if (sender == Application.teller) {
+							Teller(msg);
+							continue;
+						}
 						
-
-					// store type
-					type = msg.getType();
-					
-					switch (type) {
-				    case MessageType.login:
-				        // code
-				        break;
-				    case MessageType.logout:
-				        // code
-				        break;
-				    case MessageType.updateAccount:
-				    	
-				    case MessageType.updateProfile:
-				    	
-				    case MessageType.withdrawal:
-				    	
-				    case MessageType.deposit:
-				    	
-				    default:
-				        // code
+						// if sender is undefined continue
+						else {
+							continue;
+						}						
+					}		
 				}
-						
-						
-					}
-
-				}
-
-				
-
 			}
+		}
 
-		} catch (Exception e) {
+		catch(Exception e) {}
 
 		}
 
-	}
+	
 	
 	// handles ATM related messages
-	private void ATM(){
+	private void ATM(Message msg){
+		// store type
+		MessageType type = msg.getType();
+		
+		// first message has to be login
+		
+		/*
+		switch (type) {
+	    case MessageType.login:
+	        // code
+	        break;
+	    case MessageType.logout:
+	        // code
+	        break;
+	    case MessageType.updateAccount:
+	    	
+	    case MessageType.updateProfile:
+	    	
+	    case MessageType.withdrawal:
+	    	
+	    case MessageType.deposit:
+	    	
+	    default:
+	        // code
+	    	
+	    */
 		
 	}
 	
 	// handles Teller related messages
-	private void Teller() {
+	private void Teller(Message msg) {
 		
+		// store type
+		MessageType type = msg.getType();
+		
+		// employee login happens first
+		// if type is not login ignore
+		// check employees.txt for credentials
+		
+		
+		
+		/*
+		switch (type) {
+	    case MessageType.login:
+	        // code
+	        break;
+	    case MessageType.logout:
+	        // code
+	        break;
+	    case MessageType.updateAccount:
+	    	
+	    case MessageType.updateProfile:
+	    	
+	    case MessageType.withdrawal:
+	    	
+	    case MessageType.deposit:
+	    	
+	    default:
+	        // code
+		*/
 	}
 	
-	//private void
 
 }

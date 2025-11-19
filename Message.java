@@ -55,25 +55,10 @@ public class Message implements Serializable {
     public long getNum() {
     	return number;
     }
-
-    // getters
-    public int getID() {
-    	return id;
-    }
     
-    public MessageType getType() {
+    public Application getSender() {
+    	return sender;
     	
-    	return type;
-    }
-    
-    public MessageStatus getStatus() {
-    	
-    	return status;
-    }
-    
-    public String getText() {
-    	
-    	return text;
     }
 }
     
