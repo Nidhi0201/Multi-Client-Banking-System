@@ -17,9 +17,12 @@ public class BankGUI {
 	Profile profile;
 	Account account;
 	Scanner scan;
+	Application application;
 	
-	public BankGUI() {
+	
+	public BankGUI(Application app) {
 		scan = new Scanner(System.in);
+		application = app;
 	}
 
 	//////////////////////
@@ -27,56 +30,71 @@ public class BankGUI {
 	//////////////////////
 	
 	
-	// create a frame
-	   // frame is an outside border defines a boundary (window)
-	   private static void startGUI() {   
+	
+	   // shows teller specific screen
+	   private static void startTeller() {   
 		   Boolean loggedIn = false;
 		   Boolean quit = false;
 		   
-		  // loop for entire system if quit = q GUI closes
+		  // loop for entire system if quit is true GUI closes
 		  while(!quit) {
 			  
-			// until employee is logged in
-			  while (!loggedIn) {
-				// created a frame, string passed is window title
+			
+				  
+				  // employee login frame starts visible
 			      JFrame employeeLogin = new JFrame("Welcome Employee");
+			      employeeLogin.setVisible(false);
 			      employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			      createUI(employeeLogin); 
+			      // customer login frame starts invisible
+			      JFrame customerLogin = new JFrame("Welcome Customer");
+			      customerLogin.setVisible(false);
 			      
-			    // close employee login
-			  }
+			      
+			      
+			     
+			      employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			      createUI(employeeLogin); 
+			      // height by width in pixels
+			      employeeLogin.setSize(1000, 500); 
+			      // relative to null is center of screen
+			      employeeLogin.setLocationRelativeTo(null);
+			      // TODO make employee login invisible
 			  
-			// after employee login open cusomter login
-		      JFrame customerLogin = new JFrame("Welcome Customer");
+			  
+		      // if its invisible you can make it visible when needed
+		      customerLogin.setVisible(true);
 		      customerLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		      createUI(customerLogin); 
+		      // height by width in pixels
+		      customerLogin.setSize(1000, 500); 
+		      // relative to null is center of screen
+		      customerLogin.setLocationRelativeTo(null);
 			  
 			  
 		  }
 		  
 		  JFrame frame = new JFrame("Welcome Customer");
 		  
+	        
 	      
-
-
-	      
-	      createUI(frame); 
-	      
-	      // height by width in pixels
-	      frame.setSize(560, 200);     
-	      
-	      // how do i want the window relatively; relative to null is center of screen
-	      frame.setLocationRelativeTo(null);
+	     
 	      
 	      // set the frame attribute to true; makes it visible
 	      // if its invisible you can make it visible when needed
 	      frame.setVisible(true);	
 	   }
+	   
+	   // shows ATM specific screen
+	   private static void startATM() {
+		   
+	   } 
+	   
 
 	   
 	   
 	   // panel is the flat piece that lives in the frame
-	   // creates panetl
+	   // creates panel
 	   private static void createUI(final JFrame frame){  
 		   
 		  // create panel
