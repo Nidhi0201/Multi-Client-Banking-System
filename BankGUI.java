@@ -29,13 +29,35 @@ public class BankGUI {
 	
 	// create a frame
 	   // frame is an outside border defines a boundary (window)
-	   private static void createWindow() {   
+	   private static void startGUI() {   
+		   Boolean loggedIn = false;
+		   Boolean quit = false;
 		   
-		  // created a frame, string passed is window title
-	      JFrame frame = new JFrame("GUI");
+		  // loop for entire system if quit = q GUI closes
+		  while(!quit) {
+			  
+			// until employee is logged in
+			  while (!loggedIn) {
+				// created a frame, string passed is window title
+			      JFrame employeeLogin = new JFrame("Welcome Employee");
+			      employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			      createUI(employeeLogin); 
+			      
+			    // close employee login
+			  }
+			  
+			// after employee login open cusomter login
+		      JFrame customerLogin = new JFrame("Welcome Customer");
+		      customerLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		      createUI(customerLogin); 
+			  
+			  
+		  }
+		  
+		  JFrame frame = new JFrame("Welcome Customer");
+		  
 	      
-	      // end the program if the x button is closed "what happens if you click x"
-	      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 
 	      
 	      createUI(frame); 
