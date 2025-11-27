@@ -13,164 +13,166 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+// GUI object that can be used for an ATM or Teller Application
 public class BankGUI {
-	Profile profile;
-	Account account;
 	Scanner scan;
 	Application application;
-	
-	
+
+	// GUI constructor takes the application in use
 	public BankGUI(Application app) {
 		scan = new Scanner(System.in);
 		application = app;
+
+		// start up the GUI based on the application
+		if (app == Application.teller) {
+			startTeller();
+		} else if (app == Application.ATM) {
+			startATM();
+		}
 	}
 
-	//////////////////////
-	//   Example Code 	//
-	//////////////////////
-	
-	
-	
-	   // shows teller specific screen
-	   private static void startTeller() {   
-		   Boolean loggedIn = false;
-		   Boolean quit = false;
-		   
-		  // loop for entire system if quit is true GUI closes
-		  while(!quit) {
-			  
-			
-				  
-				  // employee login frame starts visible
-			      JFrame employeeLogin = new JFrame("Welcome Employee");
-			      employeeLogin.setVisible(false);
-			      employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			      createUI(employeeLogin); 
-			      // customer login frame starts invisible
-			      JFrame customerLogin = new JFrame("Welcome Customer");
-			      customerLogin.setVisible(false);
-			      
-			      
-			      
-			     
-			      employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			      createUI(employeeLogin); 
-			      // height by width in pixels
-			      employeeLogin.setSize(1000, 500); 
-			      // relative to null is center of screen
-			      employeeLogin.setLocationRelativeTo(null);
-			      // TODO make employee login invisible
-			  
-			  
-		      // if its invisible you can make it visible when needed
-		      customerLogin.setVisible(true);
-		      customerLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		      createUI(customerLogin); 
-		      // height by width in pixels
-		      customerLogin.setSize(1000, 500); 
-		      // relative to null is center of screen
-		      customerLogin.setLocationRelativeTo(null);
-			  
-			  
-		  }
-		  
-		  JFrame frame = new JFrame("Welcome Customer");
-		  
-	        
-	      
-	     
-	      
-	      // set the frame attribute to true; makes it visible
-	      // if its invisible you can make it visible when needed
-	      frame.setVisible(true);	
-	   }
-	   
-	   // shows ATM specific screen
-	   private static void startATM() {
-		   
-	   } 
-	   
+	//////////////////////////////////
+	// shows teller specific screen //
+	//////////////////////////////////
+	private static void startTeller() {
+		Boolean employeeloggedIn = false;
+		Boolean customerloggedIn = false;
+		Boolean quit = false;
 
-	   
-	   
-	   // panel is the flat piece that lives in the frame
-	   // creates panel
-	   private static void createUI(final JFrame frame){  
-		   
-		  // create panel
-	      JPanel panel = new JPanel();
-	      
-	      // this affects how assets populate the panel
-	      LayoutManager layout = new FlowLayout();  // comment out: To try alternate layouts
-	      //LayoutManager layout = new GridLayout();  // uncomment: To try alternate layouts
-	      
-	      // apply layout to panel
-	      panel.setLayout(layout);       
+		// loop for entire system if quit is true GUI closes
+		while (!quit) {
 
-	      // the assets, buttons and 
-	      
-	      // default of 20 characters
-	      JTextField textField = new JTextField(20); // create a textfield
+			// until employee is logged in
+			while (!employeeloggedIn) {
+				employeeloggedIn = loginScreen("employee");
+			}
 
-	      // pass the text for the button as an argument
-	      JButton okButton = new JButton("Ok");
-	      JButton exitButton = new JButton("Exit");
-	      JButton cancelButton = new JButton("Cancel");
-	      
-	      // not enabled is grayed out, not accesible
-	      //cancelButton.setEnabled(true);
-	      cancelButton.setEnabled(false);
-	      JButton submitButton = new JButton("Submit");
+			// until customer is logged in
+			while (!customerloggedIn) {
+				customerloggedIn = loginScreen("employee");
+			}
 
-	      // put desired outputs in action listeners?
-	      okButton.addActionListener(new ActionListener() {
-	         public void actionPerformed(ActionEvent e) {
-	            
-	        	// when they click ok, it makes the cancel button available
-	        	JOptionPane.showMessageDialog(frame, "Ok Button clicked. Cancel Enabled");
-	            cancelButton.setEnabled(true);
-	         }
-	      });
+			// once all login is complete, display customer profile screen (show name+list
+			// of accounts)
 
-	      submitButton.addActionListener(new ActionListener() {
-	         public void actionPerformed(ActionEvent e) {
-	        	String str = "Submit Button clicked. Text: " + textField.getText();
-	            JOptionPane.showMessageDialog(frame, str);
-	            textField.setText("");
-	         }
-	      });
-	      
-	      cancelButton.addActionListener(new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {
-	             JOptionPane.showMessageDialog(frame, "Cancel Button clicked.");
-	             cancelButton.setEnabled(false);
-	          }
-	       });
+			// buttons for view info, view account (drop down menu), or open new account
 
-	      exitButton.addActionListener(new ActionListener() {
-	          public void actionPerformed(ActionEvent e) {
-	             JOptionPane.showMessageDialog(frame, "Goodbye");
-	             System.exit(0);	// End program
-	          }
-	       });
-
-	      
-	      // the "active" button by default what works if u press enter
-	      frame.getRootPane().setDefaultButton(submitButton); //Default button focus
-
-	      panel.add(okButton);
-	      panel.add(cancelButton);
-	      panel.add(submitButton);
-	      panel.add(textField); // add the textfield from above
-	      panel.add(exitButton); //add the exit button
-
-	      // this is how we add a panel to the frame after all the details
-	      frame.getContentPane().add(panel, BorderLayout.CENTER);    
-	   }
+		}
 	}
 
-	
-	
-	
+	///////////////////////////////
+	// shows ATM specific screen //
+	///////////////////////////////
+	private static void startATM() {
 
+	}
 
+	// login screen for employees or customers
+	private static boolean loginScreen(String role) {
+		boolean loggedin = false;
+
+		// create login screen
+		// employee login frame starts visible
+		JFrame employeeLogin = new JFrame("Employee Login");
+		employeeLogin.setVisible(true);
+		employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		createUI(employeeLogin);
+		// height by width in pixels
+		employeeLogin.setSize(1000, 500);
+		// relative to null is center of screen
+		employeeLogin.setLocationRelativeTo(null);
+
+		// employee login sequence
+		if (role.equals("employee")) {
+
+			return loggedin;
+		}
+
+		// customer login sequence
+		if (role.equals("customer")) {
+
+			return loggedin;
+		}
+
+		return loggedin;
+	}
+
+	// displays account or profile information
+	private void viewInfo(String source) {
+
+	}
+
+	// panel is the flat piece that lives in the frame
+	// creates panel
+	private static void createUI(final JFrame frame) {
+
+		// create panel
+		JPanel panel = new JPanel();
+
+		// this affects how assets populate the panel
+		LayoutManager layout = new FlowLayout(); // comment out: To try alternate layouts
+		// LayoutManager layout = new GridLayout(); // uncomment: To try alternate
+		// layouts
+
+		// apply layout to panel
+		panel.setLayout(layout);
+
+		// the assets, buttons and
+
+		// default of 20 characters
+		JTextField textField = new JTextField(20); // create a textfield
+
+		// pass the text for the button as an argument
+		JButton okButton = new JButton("Ok");
+		JButton exitButton = new JButton("Exit");
+		JButton cancelButton = new JButton("Cancel");
+
+		// not enabled is grayed out, not accesible
+		cancelButton.setEnabled(false);
+		JButton submitButton = new JButton("Submit");
+
+		// put desired outputs in action listeners?
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				// when they click ok, it makes the cancel button available
+				JOptionPane.showMessageDialog(frame, "Ok Button clicked. Cancel Enabled");
+				cancelButton.setEnabled(true);
+			}
+		});
+
+		submitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String str = "Submit Button clicked. Text: " + textField.getText();
+				JOptionPane.showMessageDialog(frame, str);
+				textField.setText("");
+			}
+		});
+
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame, "Cancel Button clicked.");
+				cancelButton.setEnabled(false);
+			}
+		});
+
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame, "Goodbye");
+				System.exit(0); // End program
+			}
+		});
+
+		// the "active" button by default what works if u press enter
+		frame.getRootPane().setDefaultButton(submitButton); // Default button focus
+
+		panel.add(okButton);
+		panel.add(cancelButton);
+		panel.add(submitButton);
+		panel.add(textField); // add the textfield from above
+		panel.add(exitButton); // add the exit button
+
+		// this is how we add a panel to the frame after all the details
+		frame.getContentPane().add(panel, BorderLayout.CENTER);
+	}
+}
