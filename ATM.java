@@ -10,7 +10,6 @@ public class ATM {
 	static MessageStatus request = MessageStatus.request;
 	static MessageType withdraw = MessageType.withdrawal;
 	static MessageType deposit = MessageType.deposit;
-	static MessageType login = MessageType.login;
 	static MessageType logout = MessageType.logout;
 	static Application ATM = Application.ATM;
 	

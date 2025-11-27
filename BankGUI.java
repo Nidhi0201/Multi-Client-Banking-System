@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -17,19 +18,31 @@ import javax.swing.JTextField;
 public class BankGUI {
 	Scanner scan;
 	Application application;
+	static Teller teller;
+	static ATM atm;
 
 	// GUI constructor takes the application in use
-	public BankGUI(Application app) {
+	public BankGUI(ATM atm, Teller teller) {
 		scan = new Scanner(System.in);
-		application = app;
+		this.teller = teller;
+		this.atm = atm;
 
 		// start up the GUI based on the application
-		if (app == Application.teller) {
+		if (teller != null) {
+			// if teller object, startTeller GUI
 			startTeller();
-		} else if (app == Application.ATM) {
+		}
+		else if (atm != null) {
+			
+			// if ATM object startATM GUI
 			startATM();
 		}
+		// if no client is recieved
+		else {
+			// TODO not sure what do to
+		}
 	}
+	
 
 	//////////////////////////////////
 	// shows teller specific screen //
@@ -71,29 +84,50 @@ public class BankGUI {
 	private static boolean loginScreen(String role) {
 		boolean loggedin = false;
 
-		// create login screen
-		// employee login frame starts visible
-		JFrame employeeLogin = new JFrame("Employee Login");
+		// create login screen frame
+		JFrame employeeLogin = new JFrame("Login");
 		employeeLogin.setVisible(true);
+		// frame closes by the X button
 		employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		createUI(employeeLogin);
 		// height by width in pixels
 		employeeLogin.setSize(1000, 500);
 		// relative to null is center of screen
 		employeeLogin.setLocationRelativeTo(null);
+		
+		// create login screen panel
+		JPanel panel = new JPanel();
+	    JTextField enterUser = new JTextField(20);
+	    JTextField enterPass = new JTextField(20);
+	    // pass the text for the button as an argument
+	    JButton loginButton = new JButton("Login");
+	    
+	    panel.setLayout(new FlowLayout());
+	    panel.add(new JLabel("Employee Login"));
+	    panel.add(enterUser);
+	    panel.add(enterPass);
 
 		// employee login sequence
 		if (role.equals("employee")) {
-
+			
+			// login button calls employee login on the teller application with user + pass
+			loginButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					teller.employeeLogin(enterUser.getText(), enterPass.getText());}});
+			// return
 			return loggedin;
 		}
 
 		// customer login sequence
 		if (role.equals("customer")) {
-
+		
+			// login button calls employee login on the teller application with user + pass
+			loginButton.addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e) {
+					teller.customerLogin(enterUser.getText(), enterPass.getText());}});
+			//return
 			return loggedin;
 		}
-
+		// return
 		return loggedin;
 	}
 

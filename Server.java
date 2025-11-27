@@ -145,7 +145,7 @@ class ClientHandler implements Runnable {
 		System.out.println("Client said: " + msg.getText()); //TODO
 		
 		// if the message isn't login get a new one
-		if (msg.getType() != MessageType.login) {
+		if (msg.getType() != MessageType.customerLogin) {
 			return;
 		}
 		
