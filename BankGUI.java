@@ -43,27 +43,14 @@ public class BankGUI {
 		}
 	}
 	
-
+	
+	
 	//////////////////////////////////
 	// shows teller specific screen //
 	//////////////////////////////////
 	private static void startTeller() {
-		Boolean employeeloggedIn = false;
-		Boolean customerloggedIn = false;
-		Boolean quit = false;
-
-		// loop for entire system if quit is true GUI closes
-		while (!quit) {
-
-			// until employee is logged in
-			while (!employeeloggedIn) {
-				employeeloggedIn = loginScreen("employee");
-			}
-
-			// until customer is logged in
-			while (!customerloggedIn) {
-				customerloggedIn = loginScreen("employee");
-			}
+		// must first login employee and customer at teller
+		loginScreen();
 
 			// once all login is complete, display customer profile screen (show name+list
 			// of accounts)
@@ -71,7 +58,8 @@ public class BankGUI {
 			// buttons for view info, view account (drop down menu), or open new account
 
 		}
-	}
+	
+	
 
 	///////////////////////////////
 	// shows ATM specific screen //
@@ -80,64 +68,124 @@ public class BankGUI {
 
 	}
 
-	// login screen for employees or customers
-	private static boolean loginScreen(String role) {
-		boolean loggedin = false;
+	
+	// login screen for employees then customers
+	private static void loginScreen() {
+		//TODO maybe remove
+	    boolean loggedIn = false;
 
-		// create login screen frame
-		JFrame employeeLogin = new JFrame("Login");
-		employeeLogin.setVisible(true);
-		// frame closes by the X button
-		employeeLogin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// height by width in pixels
-		employeeLogin.setSize(1000, 500);
-		// relative to null is center of screen
-		employeeLogin.setLocationRelativeTo(null);
-		
-		// create login screen panel
-		JPanel panel = new JPanel();
-	    JTextField enterUser = new JTextField(20);
-	    JTextField enterPass = new JTextField(20);
-	    // pass the text for the button as an argument
-	    JButton loginButton = new JButton("Login");
+	    // create login screen frame
+	    JFrame login = new JFrame("Login");
+	    // frame closes by the X button
+	    login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    // height by width in pixels
+	    login.setSize(1000, 500);
+	    // relative to null is center of screen
+	    login.setLocationRelativeTo(null);
+	    login.setLayout(new BorderLayout());
+
 	    
-	    panel.setLayout(new FlowLayout());
-	    panel.add(new JLabel("Employee Login"));
-	    panel.add(enterUser);
-	    panel.add(enterPass);
 
-		// employee login sequence
-		if (role.equals("employee")) {
-			
-			// login button calls employee login on the teller application with user + pass
-			loginButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					teller.employeeLogin(enterUser.getText(), enterPass.getText());}});
-			// return
-			return loggedin;
-		}
+	    // create employee login screen panel + text fields
+	    JPanel employeePanel = new JPanel();
+	    employeePanel.setLayout(new FlowLayout());   
+	    JTextField employeeUser = new JTextField(20);
+	    JTextField employeePass = new JTextField(20);
+	    // ELB = employee login button
+	    JButton ELB = new JButton("Employee Login");
+	    employeePanel.add(new JLabel("Employee Login"));
+	    employeePanel.add(employeeUser);
+	    employeePanel.add(employeePass);
+	    employeePanel.add(ELB);
 
-		// customer login sequence
-		if (role.equals("customer")) {
+	
+
+	    // panel for customer login that starts invisible
+	    JPanel customerPanel = new JPanel();
+	    customerPanel.setLayout(new FlowLayout());
+	    JTextField customerUser = new JTextField(20);
+	    JTextField customerPass = new JTextField(20);
+	    // CLB = customer login button
+	    JButton CLB = new JButton("Customer Login");
+	    customerPanel.add(new JLabel("Customer Login"));
+	    customerPanel.add(customerUser);
+	    customerPanel.add(customerPass);
+	    customerPanel.add(CLB);
+
+	    // add employee panel to frame
+	    login.add(employeePanel, BorderLayout.CENTER);
+	    
+
+	    // employee login sequence
+	    ELB.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		
+		        // calls employee login on the teller application with user + pass
+		        boolean valid = teller.employeeLogin(employeeUser.getText(), employeePass.getText());
+	
+		        // if employee login is approved
+		        if (valid) {
+		            // move on to customer login panel
+		            login.remove(employeePanel);
+		            login.add(customerPanel, BorderLayout.CENTER);
+		            // refresh the UI for the new panel
+		            login.revalidate();
+		            login.repaint();
+		        }
+		        // if employee login is not approved TODO start over?
+		        else {
+		            JOptionPane.showMessageDialog(login, "Employee login failed");
+		        }
+	    	}
+	    });
+
+	    
+	    // customer login sequence 
+	    CLB.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent e) {
+	    		
+	        // calls customer login on the teller application with user + pass
+	        boolean valid = teller.customerLogin(customerUser.getText(), customerPass.getText());
+
+	        if (valid) {
+	            // if customer login is approved
+	            JOptionPane.showMessageDialog(login, "Customer login success");
+	            
+	            // call showProfile
+	            showProfile();
+	            
+	            
+	            login.dispose();
+	        } else {
+	            // if customer login is not approved TODO start over?
+	            JOptionPane.showMessageDialog(login, "Customer login failed");
+	        }
+	    	}
+	    });
+
+	    // set the frame attribute to true; makes it visible
+	    login.setVisible(true);
+	}
+	
+	public static void showProfile() {
 		
-			// login button calls employee login on the teller application with user + pass
-			loginButton.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent e) {
-					teller.customerLogin(enterUser.getText(), enterPass.getText());}});
-			//return
-			return loggedin;
-		}
-		// return
-		return loggedin;
 	}
 
+	
+	
 	// displays account or profile information
 	private void viewInfo(String source) {
 
 	}
 
-	// panel is the flat piece that lives in the frame
-	// creates panel
+	
+	
+	
+	
+	
+	
+	
+	// createUI for reference
 	private static void createUI(final JFrame frame) {
 
 		// create panel
