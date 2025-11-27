@@ -64,18 +64,20 @@ public class Teller {
 
 	}
 
-	// checks with server and returns bool
-	public Boolean customerLogin(String user, String pass) {
-		boolean valid = true; // TODO revert to false
+	// checks with server and returns Profile or null if DNE
+	public Profile customerLogin(String user, String pass) {
+		Profile profile = null; // TODO revert to false
 
 		// create + send request message to teller login with user and pass
 
 		// listen for confirm message
 
-		// if status == confirmation valid = true return valid
+		// if status == confirmation 
+		// {valid = true; listen for profile object; return valid}
+		
 
 		// else
-		return valid;
+		return profile;
 
 	}
 
