@@ -12,6 +12,7 @@ public class Server {
 	private static File logFile = new File("log.txt");
 	private static File employeeFile = new File("employees.txt");
 	private static File proFile = new File("profiles.txt"); 
+	// for access to one account at a time by the ATM
 	private static File accountFile = new File("accounts.txt");
 	
 	public static void main(String args[]) throws IOException {
