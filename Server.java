@@ -81,7 +81,7 @@ class ClientHandler implements Runnable {
 				
 				// read new message
 				msg = (Message) inputStream.readObject();
-				
+
 				// until the client is logged in
 				while(!loggedIn) {
 					

@@ -8,6 +8,7 @@ public class Profile {
 	private String address;
 	private String email;
 	private Account[] accounts;
+	private int creditScore;
 	
 	
 	public Profile(String name, String user, String pass, int phone, String addy, String email) {

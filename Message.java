@@ -1,9 +1,6 @@
 package group3;
 import java.io.Serializable;
 
-import homeworks.HW5.HW5_status;
-import homeworks.HW5.HW5_type;
-
 public class Message implements Serializable {
 	private static int count = 0;
 	private final int id;
