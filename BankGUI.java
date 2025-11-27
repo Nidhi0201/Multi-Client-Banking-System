@@ -212,6 +212,8 @@ public class BankGUI {
 		profileFrame.setVisible(true);
 	}
 
+	
+	
 	// displays account or profile information
 	private void viewInfo(String source) {
 
