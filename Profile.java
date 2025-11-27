@@ -60,5 +60,11 @@ public class Profile {
 	public Account[] getAccounts() {
 		return accounts;
 	}
+	public int getCreditScore() {
+		return creditScore;
+	}
+	public String getPassword() {
+		return password;
+	}
 
 }

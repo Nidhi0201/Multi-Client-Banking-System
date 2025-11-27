@@ -69,8 +69,6 @@ public class BankGUI {
 
 	// login screen for employees then customers
 	private static void loginScreen() {
-		// TODO maybe remove
-		boolean loggedIn = false;
 
 		// create login screen frame
 		JFrame login = new JFrame("Login");
@@ -138,10 +136,9 @@ public class BankGUI {
 
 				// calls customer login on the teller application with user + pass
 				Profile profile = teller.customerLogin(customerUser.getText(), customerPass.getText());
-
-				if (profile != null) {
+				if (profile != null) { // TODO change to == for testing
 					// if customer login is approved close the panel and frame
-					// TODO JOptionPane.showMessageDialog(login, "Customer login success");
+					JOptionPane.showMessageDialog(login, "Customer login success");
 					login.remove(customerPanel);
 					login.dispose();
 
@@ -162,7 +159,9 @@ public class BankGUI {
 
 	public static void showProfile(Profile profile) {
 		// store accounts associated with the profile
-		Account[] accounts = profile.getAccounts();
+		Account[] accounts = new Account[0];//profile.getAccounts();
+		Object[] accountMenu = new Object[0]; // account array with prompt at index 0 for dropdown menu
+
 
 		// create profile view frame
 		JFrame profileFrame = new JFrame("Customer Profile");
@@ -174,50 +173,149 @@ public class BankGUI {
 		profileFrame.setLocationRelativeTo(null);
 		profileFrame.setLayout(new BorderLayout());
 
+
 		// main panel with inital options
 		JPanel main = new JPanel();
 		main.setLayout(new BorderLayout());
 		// welcome header
-		JLabel welcome = new JLabel("Welcome "+ profile.getName());
+		JLabel welcome = new JLabel("Welcome " + profile.getName());
 		welcome.setFont(new Font("Arial", Font.BOLD, 30));
 		// buttons and dropdown menu for viewing an account
 		JButton info = new JButton("View Profile Information");
 		JButton newAccount = new JButton("Add New Account");
-		JComboBox<Account> dropdown = new JComboBox<>(accounts);
-		// dropdown.setSelectedIndex(0); // TODO show default first
-
-		// header at the north spot
+		JButton openAccount = new JButton("Open Existing Account");
+		JComboBox<Object> selector = new JComboBox<>(accountMenu);
+		//selector.setSelectedIndex(0); // TODO show default first
+		// add header at the north spot
 		main.add(welcome, BorderLayout.NORTH);
 
 		// panel with gridlayout for buttons, with specified rows and columns
-		JPanel buttons = new JPanel(new GridLayout(3, 1));
+		JPanel buttons = new JPanel(new GridLayout(4, 1));
 		buttons.add(info);
 		buttons.add(newAccount);
-		buttons.add(dropdown);
+		buttons.add(openAccount);
+		buttons.add(selector);
 		// add button panel to main panel
 		main.add(buttons, BorderLayout.CENTER);
 		// add main panel to the frame
 		profileFrame.add(main, BorderLayout.CENTER);
 
-		
-		
+
+
+		// Panel for profile info
+		JPanel infoPanel = new JPanel();
+		main.setLayout(new BorderLayout());
+		JLabel name = new JLabel("Name: " + profile.getName());
+		JLabel address = new JLabel("Address: " + profile.getAddress());
+		JLabel phone = new JLabel("Phone: " + profile.getPhone());
+		JLabel email = new JLabel("Email: " + profile.getEmail());
+		JLabel score = new JLabel("Credit Score: " + profile.getCreditScore());
+		JLabel username = new JLabel("Username: " + profile.getUsername());
+		JLabel password = new JLabel("Password: " + profile.getPassword());
+		JButton update = new JButton("update personal info");
+		// String options for dropdown menu
+		String[] infoMenu = {"make a selection","Name","Address","Phone","Email","Username","Password"};
+		JComboBox<String> options = new JComboBox<>(infoMenu);
+		options.setSelectedIndex(0); // shows prompt as default
+		// add components to panel
+		infoPanel.add(name);
+		infoPanel.add(address);
+		infoPanel.add(phone);
+		infoPanel.add(email);
+		infoPanel.add(score);
+		infoPanel.add(username);
+		infoPanel.add(password);
+		infoPanel.add(update);
+		infoPanel.add(options);
+
+
+
+
+
+		// Panel for creating a new account
+		JPanel createPanel = new JPanel();
+		createPanel.setLayout(new BorderLayout());
+		JLabel message = new JLabel("Enter initial amount and select an account type");
+		JTextField initBalance = new JTextField(11);
+		JButton checking = new JButton("Checking");
+		JButton saving = new JButton("Saving");
+		JButton loc = new JButton("Line of Credit");
+		// add components to panel
+		createPanel.add(message);
+		createPanel.add(initBalance);
+		createPanel.add(checking);
+		createPanel.add(saving);
+		createPanel.add(loc);
+
+
+
+
+		// Panel for viewing existing account
+		JPanel accountPanel = new JPanel();
+		JLabel number = new JLabel("Account "+": "); // + account number TODO
+		JLabel balance = new JLabel(""); // + balance TODO
+		JButton pin = new JButton("Change Pin"); // TODO may remove
+		JButton history = new JButton("View Account History");
+		JTextField amount = new JTextField(11);
+		// set options equal to new menu // TODO be sure its closed before its used
+		String[] transactionMenu = {"select a transaction type","Deposit","Withdraw","Transfer"};
+		options = new JComboBox<>(transactionMenu);
+		options.setSelectedIndex(0); // shows prompt as default
+		JButton transaction = new JButton("Make Transaction");
+		accountPanel.add(number);
+		accountPanel.add(balance);
+		accountPanel.add(pin);
+		accountPanel.add(history);
+		accountPanel.add(amount);
+		accountPanel.add(options); // TODO be sure this is not in use
+		accountPanel.add(transaction);
+
+
+
 		info.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {}});
-		
+			public void actionPerformed(ActionEvent e) {
+				// display information panel
+				profileFrame.remove(main);
+				profileFrame.add(infoPanel, BorderLayout.CENTER);
+				// refresh the UI for the new panel
+				profileFrame.revalidate();
+				profileFrame.repaint();
+
+			}});
+
 		newAccount.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {}});
-		
-		
-		
+			public void actionPerformed(ActionEvent e) {
+				// display new account form panel
+				profileFrame.remove(main);
+				profileFrame.add(createPanel, BorderLayout.CENTER);
+				// refresh the UI for the new panel
+				profileFrame.revalidate();
+				profileFrame.repaint();
+			}});
+
+		openAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// display account panel with number + balance + buttons
+				profileFrame.remove(main);
+				profileFrame.add(accountPanel, BorderLayout.CENTER);
+				// refresh the UI for the new panel
+				profileFrame.revalidate();
+				profileFrame.repaint();
+			}});
+
+
 		profileFrame.setVisible(true);
 	}
 
-	
-	
-	// displays account or profile information
-	private void viewInfo(String source) {
 
-	}
+
+
+
+
+
+
+
+
 
 	// createUI for reference
 	private static void createUI(final JFrame frame) {
