@@ -69,7 +69,7 @@ public class BankGUI {
 
 	// login screen for employees then customers
 	private static void loginScreen() {
-		
+
 		// create login screen frame
 		JFrame login = new JFrame("Login");
 		// frame closes by the X button
@@ -162,7 +162,7 @@ public class BankGUI {
 		Account[] accounts = new Account[0];//profile.getAccounts();
 		Object[] accountMenu = new Object[0]; // account array with prompt at index 0 for dropdown menu
 
-		
+
 		// create profile view frame
 		JFrame profileFrame = new JFrame("Customer Profile");
 		// frame closes by the X button
@@ -173,7 +173,7 @@ public class BankGUI {
 		profileFrame.setLocationRelativeTo(null);
 		profileFrame.setLayout(new BorderLayout());
 
-		
+
 		// main panel with inital options
 		JPanel main = new JPanel();
 		main.setLayout(new BorderLayout());
@@ -188,7 +188,7 @@ public class BankGUI {
 		//selector.setSelectedIndex(0); // TODO show default first
 		// add header at the north spot
 		main.add(welcome, BorderLayout.NORTH);
-		
+
 		// panel with gridlayout for buttons, with specified rows and columns
 		JPanel buttons = new JPanel(new GridLayout(4, 1));
 		buttons.add(info);
@@ -199,9 +199,9 @@ public class BankGUI {
 		main.add(buttons, BorderLayout.CENTER);
 		// add main panel to the frame
 		profileFrame.add(main, BorderLayout.CENTER);
-		
-		
-		
+
+
+
 		// Panel for profile info
 		JPanel infoPanel = new JPanel();
 		main.setLayout(new BorderLayout());
@@ -227,11 +227,11 @@ public class BankGUI {
 		infoPanel.add(password);
 		infoPanel.add(update);
 		infoPanel.add(options);
-		
-		
-		
-		
-		
+
+
+
+
+
 		// Panel for creating a new account
 		JPanel createPanel = new JPanel();
 		createPanel.setLayout(new BorderLayout());
@@ -246,10 +246,10 @@ public class BankGUI {
 		createPanel.add(checking);
 		createPanel.add(saving);
 		createPanel.add(loc);
-		
-		
-		
-		
+
+
+
+
 		// Panel for viewing existing account
 		JPanel accountPanel = new JPanel();
 		JLabel number = new JLabel("Account "+": "); // + account number TODO
@@ -269,9 +269,9 @@ public class BankGUI {
 		accountPanel.add(amount);
 		accountPanel.add(options); // TODO be sure this is not in use
 		accountPanel.add(transaction);
-		
-		
-		
+
+
+
 		info.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// display information panel
@@ -280,9 +280,9 @@ public class BankGUI {
 				// refresh the UI for the new panel
 				profileFrame.revalidate();
 				profileFrame.repaint();
-				
+
 			}});
-		
+
 		newAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// display new account form panel
@@ -292,7 +292,7 @@ public class BankGUI {
 				profileFrame.revalidate();
 				profileFrame.repaint();
 			}});
-		
+
 		openAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// display account panel with number + balance + buttons
@@ -302,21 +302,21 @@ public class BankGUI {
 				profileFrame.revalidate();
 				profileFrame.repaint();
 			}});
-		
-		
+
+
 		profileFrame.setVisible(true);
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
 	// createUI for reference
 	private static void createUI(final JFrame frame) {
 
