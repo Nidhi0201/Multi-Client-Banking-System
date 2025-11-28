@@ -323,7 +323,7 @@ public class BankGUI {
 		
 		depositFrame.setVisible(true);
 	}
-
+ 
 	// login screen for employees then customers
 	private static void loginScreen() {
 
