@@ -20,6 +20,7 @@ public class Teller {
 	static MessageType customerlogin = MessageType.customerLogin;
 
 	public static void main(String args[]) throws IOException {
+		// prompt for an IP address; default will be 127.0.0.1
 		String ip = (String) JOptionPane.showInputDialog(null, "Enter IP Address", "Connect to a Server",
 				JOptionPane.QUESTION_MESSAGE, null, null, "127.0.0.1");
 
@@ -66,7 +67,7 @@ public class Teller {
 
 	// checks with server and returns Profile or null if DNE
 	public Profile customerLogin(String user, String pass) {
-		Profile profile = null; // TODO revert to false
+		Profile profile = null;
 
 		// create + send request message to teller login with user and pass
 
