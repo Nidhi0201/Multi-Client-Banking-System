@@ -64,7 +64,264 @@ public class BankGUI {
 	// shows ATM specific screen //
 	///////////////////////////////
 	private static void startATM() {
-
+		// entry point for ATM GUI - shows login first
+		atmLoginScreen();
+	}
+	
+	// ATM login screen - user enters account number and PIN
+	private static void atmLoginScreen() {
+		// create login frame
+		JFrame loginFrame = new JFrame("ATM Login");
+		loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		loginFrame.setSize(400, 300);
+		loginFrame.setLocationRelativeTo(null);
+		loginFrame.setLayout(new BorderLayout());
+		
+		// main panel with grid layout for components
+		JPanel mainPanel = new JPanel(new GridLayout(5, 1, 10, 10));
+		JLabel title = new JLabel("Welcome to ATM", JLabel.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 24));
+		
+		// account number input
+		JPanel accountPanel = new JPanel(new FlowLayout());
+		accountPanel.add(new JLabel("Account Number:"));
+		JTextField accountField = new JTextField(15);
+		accountPanel.add(accountField);
+		
+		// PIN input
+		JPanel pinPanel = new JPanel(new FlowLayout());
+		pinPanel.add(new JLabel("PIN:                      "));
+		JTextField pinField = new JTextField(15);
+		pinPanel.add(pinField);
+		
+		// login and cancel buttons
+		JPanel buttonPanel = new JPanel(new FlowLayout());
+		JButton loginBtn = new JButton("Login");
+		JButton cancelBtn = new JButton("Cancel");
+		buttonPanel.add(loginBtn);
+		buttonPanel.add(cancelBtn);
+		
+		// add all panels to main panel
+		mainPanel.add(title);
+		mainPanel.add(accountPanel);
+		mainPanel.add(pinPanel);
+		mainPanel.add(buttonPanel);
+		loginFrame.add(mainPanel, BorderLayout.CENTER);
+		
+		// login button - validates credentials with server via ATM.java
+		loginBtn.addActionListener(e -> {
+			String accountNum = accountField.getText();
+			String pin = pinField.getText();
+			if (accountNum.isEmpty() || pin.isEmpty()) {
+				JOptionPane.showMessageDialog(loginFrame, "Please enter account number and PIN");
+				return;
+			}
+			// call ATM.customerLogin() which sends message to server
+			if (atm.customerLogin(accountNum, pin)) {
+				JOptionPane.showMessageDialog(loginFrame, "Login Successful!");
+				loginFrame.dispose();
+				atmMainMenu(); // go to main menu on success
+			} else {
+				JOptionPane.showMessageDialog(loginFrame, "Invalid account number or PIN");
+				accountField.setText("");
+				pinField.setText("");
+			}
+		});
+		
+		// cancel button - disconnect and exit
+		cancelBtn.addActionListener(e -> {
+			atm.disconnect();
+			loginFrame.dispose();
+			System.exit(0);
+		});
+		
+		loginFrame.setVisible(true);
+	}
+	
+	// ATM main menu - shows options after successful login
+	private static void atmMainMenu() {
+		// create menu frame
+		JFrame menuFrame = new JFrame("ATM Menu");
+		menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		menuFrame.setSize(400, 400);
+		menuFrame.setLocationRelativeTo(null);
+		menuFrame.setLayout(new BorderLayout());
+		
+		// title at top
+		JLabel title = new JLabel("Select an Option", JLabel.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 20));
+		menuFrame.add(title, BorderLayout.NORTH);
+		
+		// four main option buttons
+		JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+		JButton balanceBtn = new JButton("Check Balance");
+		JButton withdrawBtn = new JButton("Withdraw");
+		JButton depositBtn = new JButton("Deposit");
+		JButton logoutBtn = new JButton("Logout");
+		
+		buttonPanel.add(balanceBtn);
+		buttonPanel.add(withdrawBtn);
+		buttonPanel.add(depositBtn);
+		buttonPanel.add(logoutBtn);
+		menuFrame.add(buttonPanel, BorderLayout.CENTER);
+		
+		// check balance - calls ATM.checkBalance() which talks to server
+		balanceBtn.addActionListener(e -> {
+			double balance = atm.checkBalance();
+			JOptionPane.showMessageDialog(menuFrame, "Your balance is: $" + String.format("%.2f", balance));
+		});
+		
+		// withdraw - opens withdraw screen
+		withdrawBtn.addActionListener(e -> {
+			menuFrame.setVisible(false);
+			atmWithdrawScreen(menuFrame);
+		});
+		
+		// deposit - opens deposit screen
+		depositBtn.addActionListener(e -> {
+			menuFrame.setVisible(false);
+			atmDepositScreen(menuFrame);
+		});
+		
+		// logout - calls ATM.logout() and returns to login screen
+		logoutBtn.addActionListener(e -> {
+			atm.logout();
+			JOptionPane.showMessageDialog(menuFrame, "Thank you for using ATM. Goodbye!");
+			menuFrame.dispose();
+			atmLoginScreen();
+		});
+		
+		menuFrame.setVisible(true);
+	}
+	
+	// ATM withdraw screen - allows user to withdraw money
+	private static void atmWithdrawScreen(JFrame menuFrame) {
+		// create withdraw frame
+		JFrame withdrawFrame = new JFrame("Withdraw");
+		withdrawFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		withdrawFrame.setSize(400, 300);
+		withdrawFrame.setLocationRelativeTo(null);
+		withdrawFrame.setLayout(new BorderLayout());
+		
+		JPanel mainPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+		JLabel title = new JLabel("Enter Withdrawal Amount", JLabel.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 18));
+		
+		// quick amount buttons for common withdrawals
+		JPanel quickPanel = new JPanel(new FlowLayout());
+		JButton btn20 = new JButton("$20");
+		JButton btn40 = new JButton("$40");
+		JButton btn60 = new JButton("$60");
+		JButton btn100 = new JButton("$100");
+		quickPanel.add(btn20);
+		quickPanel.add(btn40);
+		quickPanel.add(btn60);
+		quickPanel.add(btn100);
+		
+		// custom amount input
+		JPanel amountPanel = new JPanel(new FlowLayout());
+		amountPanel.add(new JLabel("Amount: $"));
+		JTextField amountField = new JTextField(10);
+		amountPanel.add(amountField);
+		
+		// confirm and cancel buttons
+		JPanel buttonPanel = new JPanel(new FlowLayout());
+		JButton confirmBtn = new JButton("Confirm");
+		JButton cancelBtn = new JButton("Cancel");
+		buttonPanel.add(confirmBtn);
+		buttonPanel.add(cancelBtn);
+		
+		mainPanel.add(title);
+		mainPanel.add(quickPanel);
+		mainPanel.add(amountPanel);
+		mainPanel.add(buttonPanel);
+		withdrawFrame.add(mainPanel, BorderLayout.CENTER);
+		
+		// quick amount buttons fill in the amount field
+		btn20.addActionListener(e -> amountField.setText("20"));
+		btn40.addActionListener(e -> amountField.setText("40"));
+		btn60.addActionListener(e -> amountField.setText("60"));
+		btn100.addActionListener(e -> amountField.setText("100"));
+		
+		// confirm button - calls ATM.withdraw() which sends request to server
+		confirmBtn.addActionListener(e -> {
+			try {
+				double amount = Double.parseDouble(amountField.getText());
+				if (atm.withdraw(amount)) {
+					JOptionPane.showMessageDialog(withdrawFrame, "Please take your cash: $" + amount);
+					withdrawFrame.dispose();
+					menuFrame.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(withdrawFrame, "Withdrawal failed. Insufficient funds.");
+				}
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(withdrawFrame, "Please enter a valid number");
+			}
+		});
+		
+		// cancel - return to main menu
+		cancelBtn.addActionListener(e -> {
+			withdrawFrame.dispose();
+			menuFrame.setVisible(true);
+		});
+		
+		withdrawFrame.setVisible(true);
+	}
+	
+	// ATM deposit screen - allows user to deposit money
+	private static void atmDepositScreen(JFrame menuFrame) {
+		// create deposit frame
+		JFrame depositFrame = new JFrame("Deposit");
+		depositFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		depositFrame.setSize(400, 250);
+		depositFrame.setLocationRelativeTo(null);
+		depositFrame.setLayout(new BorderLayout());
+		
+		JPanel mainPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+		JLabel title = new JLabel("Enter Deposit Amount", JLabel.CENTER);
+		title.setFont(new Font("Arial", Font.BOLD, 18));
+		
+		// amount input
+		JPanel amountPanel = new JPanel(new FlowLayout());
+		amountPanel.add(new JLabel("Amount: $"));
+		JTextField amountField = new JTextField(10);
+		amountPanel.add(amountField);
+		
+		// confirm and cancel buttons
+		JPanel buttonPanel = new JPanel(new FlowLayout());
+		JButton confirmBtn = new JButton("Confirm");
+		JButton cancelBtn = new JButton("Cancel");
+		buttonPanel.add(confirmBtn);
+		buttonPanel.add(cancelBtn);
+		
+		mainPanel.add(title);
+		mainPanel.add(amountPanel);
+		mainPanel.add(buttonPanel);
+		depositFrame.add(mainPanel, BorderLayout.CENTER);
+		
+		// confirm button - calls ATM.deposit() which sends request to server
+		confirmBtn.addActionListener(e -> {
+			try {
+				double amount = Double.parseDouble(amountField.getText());
+				if (atm.deposit(amount)) {
+					JOptionPane.showMessageDialog(depositFrame, "Deposited: $" + amount);
+					depositFrame.dispose();
+					menuFrame.setVisible(true);
+				} else {
+					JOptionPane.showMessageDialog(depositFrame, "Deposit failed.");
+				}
+			} catch (NumberFormatException ex) {
+				JOptionPane.showMessageDialog(depositFrame, "Please enter a valid number");
+			}
+		});
+		
+		// cancel - return to main menu
+		cancelBtn.addActionListener(e -> {
+			depositFrame.dispose();
+			menuFrame.setVisible(true);
+		});
+		
+		depositFrame.setVisible(true);
 	}
 
 	// login screen for employees then customers
@@ -306,7 +563,6 @@ public class BankGUI {
 
 		profileFrame.setVisible(true);
 	}
-
 
 
 
