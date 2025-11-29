@@ -412,7 +412,7 @@ public class BankGUI {
 
 				// calls customer login on the teller application with user + pass
 				Profile profile = teller.customerLogin(customerUser.getText(), customerPass.getText());
-				if (profile != null) { // TODO change to == for testing
+				if (profile == null) { // TODO change to == for testing
 					// if customer login is approved close the panel and frame
 					login.remove(customerPanel);
 					login.dispose();
@@ -462,7 +462,7 @@ public class BankGUI {
 		JButton openAccount = new JButton("Open Existing Account");
 		JComboBox<Object> selector = new JComboBox<>(accountMenu);
 		JButton logout = new JButton("logout");
-		selector.setSelectedIndex(0); // show default first
+		// TODO selector.setSelectedIndex(0); // show default first
 		// add header at the north spot
 		main.add(welcome, BorderLayout.NORTH);
 
