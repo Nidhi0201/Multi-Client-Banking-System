@@ -23,6 +23,7 @@ public class Server {
 			// confirmation message
 			System.out.println("Server is running ");
 
+			// variable pool is a thread pool of 20 TODO: need more?
 			var pool = Executors.newFixedThreadPool(20);
 
 			// listening loop
@@ -32,6 +33,7 @@ public class Server {
 				var socket = ss.accept();
 
 				// when there is a connection, the pool creates a new handler that uses socket
+				// (current connection)
 				pool.execute(new ClientHandler(socket, employeeFile, logFile, proFile, accountFile ));
 				
 
@@ -49,15 +51,6 @@ class ClientHandler implements Runnable {
 	private static File employeeFile;
 	private static File proFile;
 	private static File accountFile;
-	
-	// Stream references for sending responses
-	private ObjectOutputStream outputStream;
-	private ObjectInputStream inputStream;
-	
-	// ATM session tracking
-	private boolean atmLoggedIn = false;
-	private String currentAccountNum = null;
-	private double currentBalance = 0.0;
 
 	// constructor takes the socket connection
 	public ClientHandler(Socket s, File employees, File log, File profiles, File accounts) {
@@ -73,17 +66,16 @@ class ClientHandler implements Runnable {
 
 		try ( // create the object input and output streams on socket
 				var s = socket;
-				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());) {
+				ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+				ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());) {
 
-			// Store streams as instance variables for use in handler methods
-			this.outputStream = out;
-			this.inputStream = in;
-
+			// create variables outside of loop
 			Message msg = null;
+			MessageType type = MessageType.undefined;
 			Application sender = Application.undefined;
+			Boolean loggedIn = false;
 
-			System.out.println("New Connection");
+			System.out.println("New Connection"); // TODO maybe remove
 			
 			// loop that listens for messages
 			while (true) {
@@ -91,94 +83,100 @@ class ClientHandler implements Runnable {
 				// read new message
 				msg = (Message) inputStream.readObject();
 
+				// until the client is logged in
+				while(!loggedIn) {
+					
+				}
+
 				// message status must be a request
 				if (msg.getStatus() != MessageStatus.request) {
 					// loop again
 					continue;
 				}
-				
-				// check if it is from the ATM or Teller
-				sender = msg.getSender();
-				
-				// if the ATM sent the message call ATM()
-				if (sender == Application.ATM) {
-					System.out.println("ATM Message: " + msg.getType());
-					handleATM(msg);
-				}
-				// if the Teller sent the message call Teller()
-				else if (sender == Application.teller) {
-					Teller(msg);
+				// if message status is request
+				else {
+					// if type is undefined restart loop
+					if(msg.getType() == MessageType.undefined) {
+						continue;
+					}
+					
+					
+					
+					
+					
+					
+					// if message status is request and type is !undefined
+					else {
+						
+						// check if it is from the ATM or Teller
+						sender = msg.getSender();
+						
+						// if the ATM sent the message call ATM()
+						if (sender == Application.ATM ) {
+							System.out.println("ATM Message");
+							ATM(msg);
+							continue;
+						}
+						
+						// if the Teller sent the message call Teller()
+						else if (sender == Application.teller) {
+							Teller(msg);
+							continue;
+						}
+						
+						// if sender is undefined continue
+						else {
+							continue;
+						}						
+					}		
 				}
 			}
 		}
 
-		catch(Exception e) {
-			System.out.println("Client disconnected: " + e.getMessage());
-		}
+		catch(Exception e) {}
 
 		}
 
 	
 	
 	// handles ATM related messages
-	private void handleATM(Message msg) throws Exception {
-		switch (msg.getType()) {
-			case customerLogin:
-				// Parse credentials 
-				String[] creds = msg.getText().split(",");
-				java.util.Scanner scanner = new java.util.Scanner(accountFile);
-				while (scanner.hasNextLine()) {
-					String[] data = scanner.nextLine().split(",");
-					if (data[0].equals(msg.getNum()) && data[1].equals(creds[1])) {
-						atmLoggedIn = true;
-						currentAccountNum = msg.getNum();
-						currentBalance = Double.parseDouble(data[3]);
-						sendResponse(MessageStatus.confirmation, "Login successful");
-						scanner.close();
-						return;
-					}
-				}
-				scanner.close();
-				sendResponse(MessageStatus.denial, "Invalid credentials");
-				break;
-				
-			case withdrawal:
-				double withdrawAmt = Double.parseDouble(msg.getText());
-				if (withdrawAmt <= currentBalance) {
-					currentBalance -= withdrawAmt;
-					sendResponse(MessageStatus.confirmation, "Withdrawn. Balance: $" + currentBalance);
-				} else {
-					sendResponse(MessageStatus.denial, "Insufficient funds");
-				}
-				break;
-				
-			case deposit:
-				currentBalance += Double.parseDouble(msg.getText());
-				sendResponse(MessageStatus.confirmation, "Deposited. Balance: $" + currentBalance);
-				break;
-				
-			case logout:
-				atmLoggedIn = false;
-				currentBalance = 0;
-				sendResponse(MessageStatus.confirmation, "Logged out");
-				break;
-				
-			default:
-				// Balance check
-				if (msg.getText().equals("balance")) {
-					sendResponse(MessageStatus.confirmation, String.valueOf(currentBalance));
-				}
-				break;
+	private void ATM(Message msg){
+		// store type
+		MessageType type = msg.getType();
+		System.out.println("Client said: " + msg.getText()); //TODO
+		
+		// if the message isn't login get a new one
+		if (msg.getType() != MessageType.customerLogin) {
+			return;
 		}
-	}
-	private void sendResponse(MessageStatus status, String text) throws Exception {
-		outputStream.writeObject(new Message(status, null, Application.ATM, currentAccountNum, text));
-		outputStream.flush();
+		
+		/*
+		switch (type) {
+	    case MessageType.login:
+	        // code
+	        break;
+	    case MessageType.logout:
+	        // code
+	        break;
+	    case MessageType.updateAccount:
+	    	
+	    case MessageType.updateProfile:
+	    	
+	    case MessageType.withdrawal:
+	    	
+	    case MessageType.deposit:
+	    	
+	    default:
+	        // code
+	    	
+	    */
+		
 	}
 	
 	// handles Teller related messages
 	private void Teller(Message msg) {
 		
+		// store type
 		MessageType type = msg.getType();
 		
 		// employee login happens first

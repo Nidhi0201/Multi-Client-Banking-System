@@ -1,4 +1,1 @@
-1001,1234,checking,500.00
-1002,5678,saving,1500.75
-1003,0000,checking,250.00
-1004,9999,lineOfCredit,1000.00
+Customer Accounts Stored Here:
