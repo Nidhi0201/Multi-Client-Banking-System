@@ -4,14 +4,14 @@ public class Profile {
 	private String name;
 	private String username;
 	private String password;
-	private int phone;
+	private long phone;
 	private String address;
 	private String email;
 	private Account[] accounts;
 	private int creditScore;
 	
 	
-	public Profile(String name, String user, String pass, int phone, String addy, String email) {
+	public Profile(String name, String user, String pass, long phone, String addy, String email) {
 		this.name = name;
 		this.username = user;
 		this.password = pass;
@@ -20,7 +20,7 @@ public class Profile {
 		this.email = email;
 	}
 	
-	public void addAccount(Account account){
+	public void addAccount(AccountType type, double value){
 		// gets permission for a new account
 		// creates new account
 		// adds an account to the array
@@ -48,7 +48,7 @@ public class Profile {
 	public String getUsername() {
 		return username;
 	}
-	public int getPhone() {
+	public long getPhone() {
 		return phone;
 	}
 	public String getAddress() {
@@ -65,6 +65,32 @@ public class Profile {
 	}
 	public String getPassword() {
 		return password;
+	}
+	
+
+	// setters
+	public void setName(String name) {
+	    this.name = name;
+	}
+
+	public void setUsername(String username) {
+	    this.username = username;
+	}
+
+	public void setPassword(String password) {
+	    this.password = password;
+	}
+
+	public void setPhone(long phone) {
+	    this.phone = phone;
+	}
+
+	public void setAddress(String address) {
+	    this.address = address;
+	}
+
+	public void setEmail(String email) {
+	    this.email = email;
 	}
 
 }
