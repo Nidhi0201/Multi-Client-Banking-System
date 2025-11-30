@@ -24,12 +24,14 @@ public class Profile {
 		// gets permission for a new account
 		// creates new account
 		// adds an account to the array
+		// writes it to the file
 	}
 	
 	public void removeAccount(Account account){
 		// gets permission to remove account
 		// removes account from the array
 		// moves the index of the other accounts
+		// removes it from the file
 	}
 	
 	public Account findAccount(Account account) {

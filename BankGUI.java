@@ -525,6 +525,7 @@ public class BankGUI {
 		JLabel instruction = new JLabel("to make a transaction, enter the amount and then select a transaction type");
 		JButton pin = new JButton("Change Pin");
 		JButton history = new JButton("View Account History");
+		JButton remove = new JButton("Remove this Account");
 		JTextField amount = new JTextField(11);
 		// set transactionMenu equal to new menu
 		String[] transactionMenu = { "select a transaction type", "Deposit", "Withdraw", "Transfer" };
@@ -540,6 +541,7 @@ public class BankGUI {
 		accountPanel.add(accOptions);
 		accountPanel.add(instruction);
 		accountPanel.add(transaction);
+		accountPanel.add(remove);
 		accountPanel.add(transactionBack);
 
 		// user selects to show info
@@ -572,9 +574,9 @@ public class BankGUI {
 		openAccount.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// index of option selected must be > 0
-				int idx = selector.getSelectedIndex();
-				if (idx > 0) {
-					Account acct = accounts[idx - 1];
+				int index = selector.getSelectedIndex();
+				if (index > 0) {
+					Account acct = accounts[index - 1];
 
 					// update labels with this account's info
 					number.setText("Account: " + acct.getNum());
@@ -596,11 +598,11 @@ public class BankGUI {
 
 		transaction.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int idx = accOptions.getSelectedIndex();
-				if (idx > 0) {
+				int value = accOptions.getSelectedIndex();
+				if (value > 0) {
 
 					// get the choice
-					String choice = transactionMenu[idx];
+					String choice = transactionMenu[value];
 
 					// try catch to be sure amount is valid
 					double amt;
@@ -612,12 +614,12 @@ public class BankGUI {
 					}
 
 					// get the selection from the account dropdown, make sure it is an account
-					int acctIdx = selector.getSelectedIndex();
-					if (acctIdx <= 0) {
+					int index = selector.getSelectedIndex();
+					if (index <= 0) {
 						JOptionPane.showMessageDialog(profileFrame, "select an account from the dropdown menu");
 						return;
 					}
-					Account acc = accounts[acctIdx - 1];
+					Account acc = accounts[index - 1];
 
 					// switch to call the methods on the account
 					switch (choice) {
@@ -774,6 +776,22 @@ public class BankGUI {
 				return;
 				}
 			}
+		});
+		// remove an existing account
+		remove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// get the selection from the account dropdown
+				int index = selector.getSelectedIndex();
+				// make the index accurate accounting for the prompt at [0]
+				index = index-1;
+				
+				// get the accounts + pass the account to be removed into removeAccount
+				Account[] accounts = profile.getAccounts();
+				profile.removeAccount(accounts[index]);
+				
+				
+			}
+			
 		});
 
 		// update personal info buttons
