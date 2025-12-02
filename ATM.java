@@ -1,11 +1,14 @@
 package group3;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+
 import javax.swing.JOptionPane;
 
 public class ATM {
 	// easy access message parameters
-	static MessageType login = MessageType.login;
+	static MessageType login = MessageType.customerLogin;
 	static MessageType withdraw = MessageType.withdrawal;
 	static MessageType deposit = MessageType.deposit;
 	static MessageType logout = MessageType.logout;
@@ -17,7 +20,7 @@ public class ATM {
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
 	private boolean connected = false;
-	
+
 	// current account info
 	private String currentAccountNum;
 
@@ -36,13 +39,13 @@ public class ATM {
 		if (atm.isConnected()) {
 			BankGUI gui = new BankGUI(atm, null);
 		} else {
-			JOptionPane.showMessageDialog(null, 
+			JOptionPane.showMessageDialog(null,
 				"Failed to connect to server at " + ip + ":7777\n\n" +
 				"Please make sure:\n" +
 				"1. The server is running (run Server.java)\n" +
 				"2. The IP address is correct\n" +
-				"3. No firewall is blocking the connection", 
-				"Connection Failed", 
+				"3. No firewall is blocking the connection",
+				"Connection Failed",
 				JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -79,8 +82,8 @@ public class ATM {
 		try {
 			// create login request message with account number and PIN
 			String credentials = accountNum + "," + pin;
-			int accountNumInt = Integer.parseInt(accountNum);
-			Message loginMsg = new Message(request, login, atmApp, accountNumInt, credentials);
+			// Message.number is stored as String; server can parseInt if needed
+			Message loginMsg = new Message(request, login, atmApp, accountNum, credentials);
 
 			outputStream.writeObject(loginMsg);
 			outputStream.flush();
@@ -114,8 +117,7 @@ public class ATM {
 		}
 
 		try {
-			int accountNumInt = Integer.parseInt(currentAccountNum);
-			Message balanceMsg = new Message(request, MessageType.undefined, atmApp, accountNumInt, "balance");
+			Message balanceMsg = new Message(request, MessageType.undefined, atmApp, currentAccountNum, "balance");
 
 			outputStream.writeObject(balanceMsg);
 			outputStream.flush();
@@ -152,8 +154,7 @@ public class ATM {
 		}
 
 		try {
-			int accountNumInt = Integer.parseInt(currentAccountNum);
-			Message withdrawMsg = new Message(request, withdraw, atmApp, accountNumInt, String.valueOf(amount));
+			Message withdrawMsg = new Message(request, withdraw, atmApp, currentAccountNum, String.valueOf(amount));
 
 			outputStream.writeObject(withdrawMsg);
 			outputStream.flush();
@@ -185,8 +186,7 @@ public class ATM {
 		}
 
 		try {
-			int accountNumInt = Integer.parseInt(currentAccountNum);
-			Message depositMsg = new Message(request, deposit, atmApp, accountNumInt, String.valueOf(amount));
+			Message depositMsg = new Message(request, deposit, atmApp, currentAccountNum, String.valueOf(amount));
 
 			outputStream.writeObject(depositMsg);
 			outputStream.flush();
@@ -218,9 +218,9 @@ public class ATM {
 		}
 
 		try {
-			// parse account number if available, use 0 if null (logout doesn't require account number)
-			int accountNumInt = (currentAccountNum != null) ? Integer.parseInt(currentAccountNum) : 0;
-			Message logoutMsg = new Message(request, logout, atmApp, accountNumInt, "logout");
+			// use current account number if available, otherwise "0" (logout doesn't require account number)
+			String num = (currentAccountNum != null) ? currentAccountNum : "0";
+			Message logoutMsg = new Message(request, logout, atmApp, num, "logout");
 
 			outputStream.writeObject(logoutMsg);
 			outputStream.flush();
@@ -248,9 +248,15 @@ public class ATM {
 	// close connection to server
 	public void disconnect() {
 		try {
-			if (inputStream != null) inputStream.close();
-			if (outputStream != null) outputStream.close();
-			if (socket != null) socket.close();
+			if (inputStream != null) {
+				inputStream.close();
+			}
+			if (outputStream != null) {
+				outputStream.close();
+			}
+			if (socket != null) {
+				socket.close();
+			}
 			connected = false;
 			currentAccountNum = null;
 			System.out.println("Disconnected from server");

@@ -1,21 +1,22 @@
 package group3;
 
-import java.io.*;
-import java.net.InetAddress;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
+
 import javax.swing.JOptionPane;
 
 public class Teller {
 	//Easy access message parameters
 	static MessageType employeeLogin = MessageType.employeeLogin;
 	static MessageType customerLogin = MessageType.customerLogin;
-  static MessageStatus request = MessageStatus.request;
+	static MessageStatus request = MessageStatus.request;
 	static MessageType withdraw = MessageType.withdrawal;
 	static MessageType deposit = MessageType.deposit;
 	static MessageType logout = MessageType.logout;
 	static MessageType updateAcc = MessageType.updateAccount;
 	static MessageType updateProf = MessageType.updateProfile;
-	static MessageStatus request = MessageStatus.request;
 	static Application tellerApp = Application.teller;
 
 	//Connection fields
@@ -41,13 +42,13 @@ public class Teller {
 		if (teller.isConnected()) {
 			BankGUI gui = new BankGUI(null, teller);
 		} else {
-			JOptionPane.showMessageDialog(null, 
+			JOptionPane.showMessageDialog(null,
 				"Failed to connect to server at " + ip + ":7777\n\n" +
 				"Please make sure:\n" +
 				"1. The server is running (run Server.java)\n" +
 				"2. The IP address is correct\n" +
-				"3. No firewall is blocking the connection", 
-				"Connection Failed", 
+				"3. No firewall is blocking the connection",
+				"Connection Failed",
 				JOptionPane.ERROR_MESSAGE);
 		}
 	}
@@ -84,7 +85,8 @@ public class Teller {
 		try {
 			//create login request message with username and password
 			String credentials = user + "," + pass;
-			Message loginMsg = new Message(request, employeeLogin, tellerApp, 0, credentials);
+			// no specific account yet, use "0" as placeholder
+			Message loginMsg = new Message(request, employeeLogin, tellerApp, "0", credentials);
 
 			outputStream.writeObject(loginMsg);
 			outputStream.flush();
@@ -116,7 +118,8 @@ public class Teller {
 		try {
 			//Create login request message with username and password
 			String credentials = user + "," + pass;
-			Message loginMsg = new Message(request, customerLogin, tellerApp, 0, credentials);
+			// customer-level login, not tied to a single account number yet
+			Message loginMsg = new Message(request, customerLogin, tellerApp, "0", credentials);
 
 			outputStream.writeObject(loginMsg);
 			outputStream.flush();
@@ -148,8 +151,8 @@ public class Teller {
 		}
 
 		try {
-			int accountNumInt = Integer.parseInt(accountNum);
-			Message withdrawMsg = new Message(request, withdraw, tellerApp, accountNumInt, String.valueOf(amount));
+			// account-specific operation, pass account number as String
+			Message withdrawMsg = new Message(request, withdraw, tellerApp, accountNum, String.valueOf(amount));
 
 			outputStream.writeObject(withdrawMsg);
 			outputStream.flush();
@@ -181,8 +184,8 @@ public class Teller {
 		}
 
 		try {
-			int accountNumInt = Integer.parseInt(accountNum);
-			Message depositMsg = new Message(request, deposit, tellerApp, accountNumInt, String.valueOf(amount));
+			// account-specific operation, pass account number as String
+			Message depositMsg = new Message(request, deposit, tellerApp, accountNum, String.valueOf(amount));
 
 			outputStream.writeObject(depositMsg);
 			outputStream.flush();
@@ -214,8 +217,8 @@ public class Teller {
 		}
 
 		try {
-			int accountNumInt = Integer.parseInt(accountNum);
-			Message updateMsg = new Message(request, updateAcc, tellerApp, accountNumInt, updateData);
+			// account-specific update, pass account number as String
+			Message updateMsg = new Message(request, updateAcc, tellerApp, accountNum, updateData);
 
 			outputStream.writeObject(updateMsg);
 			outputStream.flush();
@@ -249,7 +252,8 @@ public class Teller {
 		try {
 			//format profile data as comma-separated string: name,username,password,phone,address,email
 			String profileData = name + "," + username + "," + password + "," + phone + "," + address + "," + email;
-			Message createMsg = new Message(request, updateProf, tellerApp, 0, "CREATE:" + profileData);
+			// profile-level operation, not tied to a specific account number
+			Message createMsg = new Message(request, updateProf, tellerApp, "0", "CREATE:" + profileData);
 
 			outputStream.writeObject(createMsg);
 			outputStream.flush();
@@ -278,7 +282,8 @@ public class Teller {
 		}
 
 		try {
-			Message updateMsg = new Message(request, updateProf, tellerApp, 0, updateData);
+			// profile-level update, not tied to a specific account number
+			Message updateMsg = new Message(request, updateProf, tellerApp, "0", updateData);
 
 			outputStream.writeObject(updateMsg);
 			outputStream.flush();
@@ -307,7 +312,8 @@ public class Teller {
 		}
 
 		try {
-			Message logoutMsg = new Message(request, logout, tellerApp, 0, "logout");
+			// logout not tied to a specific account, use "0"
+			Message logoutMsg = new Message(request, logout, tellerApp, "0", "logout");
 
 			outputStream.writeObject(logoutMsg);
 			outputStream.flush();
@@ -332,9 +338,15 @@ public class Teller {
 	//close connection to server
 	public void disconnect() {
 		try {
-			if (inputStream != null) inputStream.close();
-			if (outputStream != null) outputStream.close();
-			if (socket != null) socket.close();
+			if (inputStream != null) {
+				inputStream.close();
+			}
+			if (outputStream != null) {
+				outputStream.close();
+			}
+			if (socket != null) {
+				socket.close();
+			}
 			connected = false;
 			System.out.println("Disconnected from server");
 		} catch (IOException e) {
@@ -351,30 +363,4 @@ public class Teller {
 	public void setCurrentProfile(Profile profile) {
 		this.currentProfile = profile;
 	}
-
-	// checks with server and returns Profile or null if DNE
-	public Profile customerLogin(String user, String pass) {
-		Profile profile = null;
-
-		// create + send request message to teller login with user and pass
-
-		// listen for confirm message
-
-		// if status == confirmation 
-		// {valid = true; listen for profile object; return valid}
-		
-
-		// else
-		return profile;
-
-	}
-
-	// checks file for profile info returns null if invalid
-	public Profile findProfile(String user, String pass) {
-		Profile profile = null;
-
-		return profile;
-
-	}
-
 }

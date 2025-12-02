@@ -1,6 +1,9 @@
 package group3;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Profile implements Serializable {
@@ -12,8 +15,9 @@ public class Profile implements Serializable {
 	private String email;
 	private ArrayList<Account> accounts;
 	private int creditScore;
-	private static File accountFile = new File("accounts.txt");
-	
+	// use explicit path relative to project root so it works when run from IDE
+	private static File accountFile = new File("src/group3/accounts.txt");
+
 	public Profile(String name, String user, String pass,long phone, String addy, String email) {
 		this.name = name;
 		this.username = user;
@@ -24,7 +28,7 @@ public class Profile implements Serializable {
 		this.accounts = new ArrayList<>();
 		this.creditScore = 0;
 	}
-	
+
 	// load accounts from file into the array
 	public void loadAccounts(int[] accountNumbers) {
 		try (java.util.Scanner scanner = new java.util.Scanner(accountFile)) {
@@ -49,26 +53,26 @@ public class Profile implements Serializable {
 			System.out.println("Error loading accounts: " + e.getMessage());
 		}
 	}
-	
+
 	// add a new account to the profile
 	public void addAccount(AccountType type, double value) {
 		// generate new account number
 		int newAccountNum = generateAccountNumber();
 		// generate random 4-digit PIN
 		int newPin = 1000 + (int)(Math.random() * 9000);
-		
+
 		// create new account
 		Account newAccount = new Account(newAccountNum, newPin, type, value);
-		
+
 		// add to array
 		accounts.add(newAccount);
-		
+
 		// write to file
 		saveAccountToFile(newAccount);
-		
+
 		System.out.println("Account created: " + newAccountNum + " PIN: " + newPin);
 	}
-	
+
 	// generate unique account number
 	private int generateAccountNumber() {
 		int maxNum = 1000;
@@ -88,7 +92,7 @@ public class Profile implements Serializable {
 		}
 		return maxNum;
 	}
-	
+
 	// save a single account to file
 	private void saveAccountToFile(Account acc) {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(accountFile, true))) {
@@ -97,14 +101,14 @@ public class Profile implements Serializable {
 			System.out.println("Error saving account: " + e.getMessage());
 		}
 	}
-	
+
 	// remove account from profile
 	public void removeAccount(Account account) {
 		int removedNum = account.getNum();
 		accounts.remove(account);
 		rewriteAccountsFile(removedNum);
 	}
-	
+
 	// rewrite accounts file excluding the removed account
 	private void rewriteAccountsFile(int removedAccountNum) {
 		ArrayList<String> linesToKeep = new ArrayList<>();
@@ -119,7 +123,7 @@ public class Profile implements Serializable {
 		} catch (Exception e) {
 			System.out.println("Error reading accounts: " + e.getMessage());
 		}
-		
+
 		try (PrintWriter writer = new PrintWriter(accountFile)) {
 			for (String line : linesToKeep) {
 				writer.println(line);
@@ -128,7 +132,7 @@ public class Profile implements Serializable {
 			System.out.println("Error rewriting accounts: " + e.getMessage());
 		}
 	}
-	
+
 	// find account by account number
 	public Account findAccount(int accountNumber) {
 		for (Account acc : accounts) {
@@ -138,7 +142,7 @@ public class Profile implements Serializable {
 		}
 		return null;
 	}
-	
+
 	// find account by Account object
 	public Account findAccount(Account account) {
 		for (Account acc : accounts) {
@@ -148,7 +152,7 @@ public class Profile implements Serializable {
 		}
 		return null;
 	}
-	
+
 	// getters
 	public String getName() {
 		return name;

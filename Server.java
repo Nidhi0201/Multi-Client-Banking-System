@@ -12,16 +12,17 @@ import java.util.concurrent.Executors;
 import javax.swing.JOptionPane;
 
 public class Server {
-	private static File employeeFile = new File("employees.txt"); 	// username,password\n
-	private static File logFile = new File("log.txt"); 				// accountNum,type,message,date\n
-	private static File proFile = new File("profiles.txt"); 		// username,password,name,phone,address,email,creditScore,[num,num,num]\n
+	// explicit paths so files resolve when running from project root
+	private static File employeeFile = new File("src/group3/Employees.txt"); 	// username,password\n
+	private static File logFile = new File("src/group3/log.txt"); 				// accountNum,type,message,date\n
+	private static File proFile = new File("src/group3/profiles.txt"); 		// username,password,name,phone,address,email,creditScore,[num,num,num]\n
 	// for access to one account at a time by the ATM
-	private static File accountFile = new File("accounts.txt"); 	// number,pin,type,balance,initialBalance
+	private static File accountFile = new File("src/group3/accounts.txt"); 	// number,pin,type,balance,initialBalance
 
 	public static void main(String args[]) throws IOException {
 
 		// make a server socket on the port number
-		try (ServerSocket ss = new ServerSocket(777)) {
+		try (ServerSocket ss = new ServerSocket(7777)) {
 
 			// confirmation message
 			JOptionPane.showMessageDialog(null, "Server is running");
@@ -66,13 +67,6 @@ class ClientHandler implements Runnable {
 	public void run() {
 
 		try ( // create the object input and output streams on socket
-			var s = socket;
-			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
-			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());) {
-
-			// Store streams as instance variables for use in handler methods
-			this.outputStream = out;
-			this.inputStream = in;
 				var s = socket;
 				// IMPORTANT: Server reads first, so create InputStream before OutputStream to avoid deadlock
 				ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
@@ -82,9 +76,9 @@ class ClientHandler implements Runnable {
 			Message msg = null;
 			MessageType type = MessageType.undefined;
 			Application sender = Application.undefined;
-			Boolean loggedIn = false;
+			boolean loggedIn = false;
 
-			JOptionPane.showMessageDialog(null,"New Connection"); // TODO remove
+			System.out.println("New Connection"); // TODO remove (or make graphical)
 
 			// loop that listens for messages
 			while (true) {
@@ -142,8 +136,8 @@ class ClientHandler implements Runnable {
 	private void ATM(Message msg) {
 		// parse files needed
 		String[] accounts = parse(accountFile);
-		
-		
+
+
 		// store type
 		MessageType type = msg.getType();
 		System.out.println("Client said: " + msg.getText()); // TODO remove
@@ -156,15 +150,15 @@ class ClientHandler implements Runnable {
 		/*
 		 * switch (type) { case MessageType.login: // code break; case
 		 * MessageType.logout: // code break; case MessageType.updateAccount:
-		 * 
+		 *
 		 * case MessageType.updateProfile:
-		 * 
+		 *
 		 * case MessageType.withdrawal:
-		 * 
+		 *
 		 * case MessageType.deposit:
-		 * 
+		 *
 		 * default: // code
-		 * 
+		 *
 		 */
 
 	}
@@ -176,9 +170,9 @@ class ClientHandler implements Runnable {
 		String[] profiles = parse(proFile);
 		String[] log = parse(logFile);
 		String[] accounts = parse(accountFile);
-		
-		
-		
+
+
+
 		// store type
 		MessageType type = msg.getType();
 
@@ -189,16 +183,16 @@ class ClientHandler implements Runnable {
 		/*
 		 * switch (type) { case MessageType.login: // code break; case
 		 * MessageType.logout: // code break; case MessageType.updateAccount:
-		 * 
+		 *
 		 * case MessageType.updateProfile:
-		 * 
+		 *
 		 * case MessageType.withdrawal:
-		 * 
+		 *
 		 * case MessageType.deposit:
-		 * 
+		 *
 		 * default: // code
 		 */
-		
+
 		// create profile object when customer logs in
 	}
 
