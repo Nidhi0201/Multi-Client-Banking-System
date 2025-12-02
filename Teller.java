@@ -3,11 +3,10 @@ package group3;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-
 import javax.swing.JOptionPane;
 
 public class Teller {
-	// easy access message parameters
+	//Easy access message parameters
 	static MessageType employeeLogin = MessageType.employeeLogin;
 	static MessageType customerLogin = MessageType.customerLogin;
   static MessageStatus request = MessageStatus.request;
@@ -19,7 +18,7 @@ public class Teller {
 	static MessageStatus request = MessageStatus.request;
 	static Application tellerApp = Application.teller;
 
-	// connection fields
+	//Connection fields
 	private Socket socket;
 	private ObjectOutputStream outputStream;
 	private ObjectInputStream inputStream;
@@ -28,11 +27,11 @@ public class Teller {
 	private Profile currentProfile;
 
 	public static void main(String args[]) throws IOException {
-		// prompt for an IP address; default will be 127.0.0.1
+		//prompt for an IP address; default will be 127.0.0.1
 		String ip = (String) JOptionPane.showInputDialog(null, "Enter IP Address", "Connect to a Server",
 				JOptionPane.QUESTION_MESSAGE, null, null, "127.0.0.1");
 
-		// if user presses Cancel or X quit the main
+		//if user presses Cancel or X quit the main
 		if (ip == null) {
 			return;
 		}
@@ -42,13 +41,20 @@ public class Teller {
 		if (teller.isConnected()) {
 			BankGUI gui = new BankGUI(null, teller);
 		} else {
-			JOptionPane.showMessageDialog(null, "Failed to connect to server.");
+			JOptionPane.showMessageDialog(null, 
+				"Failed to connect to server at " + ip + ":7777\n\n" +
+				"Please make sure:\n" +
+				"1. The server is running (run Server.java)\n" +
+				"2. The IP address is correct\n" +
+				"3. No firewall is blocking the connection", 
+				"Connection Failed", 
+				JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
-	// constructor - establishes connection to server
+	//constructor - establishes connection to server
 	public Teller(String ip) {
-		int port = 777;
+		int port = 7777;
 		try {
 			socket = new Socket(ip, port);
 			System.out.println("Connected to server at " + ip + ":" + port);
@@ -59,25 +65,26 @@ public class Teller {
 
 		} catch (IOException e) {
 			System.out.println("Error connecting to server: " + e.getMessage());
+			e.printStackTrace();
 			connected = false;
 		}
 	}
 
-	// check if connected to server
+	//check if connected to server
 	public boolean isConnected() {
 		return connected;
 	}
 
-	// employee login with username and password
+	//employee login with username and password
 	public boolean employeeLogin(String user, String pass) {
 		if (!connected) {
 			return false;
 		}
 
 		try {
-			// create login request message with username and password
+			//create login request message with username and password
 			String credentials = user + "," + pass;
-			Message loginMsg = new Message(request, employeeLogin, tellerApp, null, credentials);
+			Message loginMsg = new Message(request, employeeLogin, tellerApp, 0, credentials);
 
 			outputStream.writeObject(loginMsg);
 			outputStream.flush();
@@ -100,16 +107,16 @@ public class Teller {
 		}
 	}
 
-	// customer login - returns Profile or null if invalid
+	//customer login - returns Profile or null if invalid
 	public Profile customerLogin(String user, String pass) {
 		if (!connected) {
 			return null;
 		}
 
 		try {
-			// create login request message with username and password
+			//Create login request message with username and password
 			String credentials = user + "," + pass;
-			Message loginMsg = new Message(request, customerLogin, tellerApp, null, credentials);
+			Message loginMsg = new Message(request, customerLogin, tellerApp, 0, credentials);
 
 			outputStream.writeObject(loginMsg);
 			outputStream.flush();
@@ -117,10 +124,10 @@ public class Teller {
 
 			Message response = (Message) inputStream.readObject();
 
-			// check if login was successful
+			//check if login was successful
 			if (response.getStatus() == MessageStatus.confirmation) {
 				System.out.println("Customer login successful");
-				// receive profile object from server
+				//receive profile object from server
 				currentProfile = (Profile) inputStream.readObject();
 				return currentProfile;
 			} else {
@@ -134,14 +141,15 @@ public class Teller {
 		}
 	}
 
-	// withdraw money from account
+	//withdraw money from account
 	public boolean withdraw(String accountNum, double amount) {
 		if (!connected) {
 			return false;
 		}
 
 		try {
-			Message withdrawMsg = new Message(request, withdraw, tellerApp, accountNum, String.valueOf(amount));
+			int accountNumInt = Integer.parseInt(accountNum);
+			Message withdrawMsg = new Message(request, withdraw, tellerApp, accountNumInt, String.valueOf(amount));
 
 			outputStream.writeObject(withdrawMsg);
 			outputStream.flush();
@@ -157,20 +165,24 @@ public class Teller {
 				return false;
 			}
 
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid account number format: " + accountNum);
+			return false;
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error during withdrawal: " + e.getMessage());
 			return false;
 		}
 	}
 
-	// deposit money to account
+	//deposit money to account
 	public boolean deposit(String accountNum, double amount) {
 		if (!connected) {
 			return false;
 		}
 
 		try {
-			Message depositMsg = new Message(request, deposit, tellerApp, accountNum, String.valueOf(amount));
+			int accountNumInt = Integer.parseInt(accountNum);
+			Message depositMsg = new Message(request, deposit, tellerApp, accountNumInt, String.valueOf(amount));
 
 			outputStream.writeObject(depositMsg);
 			outputStream.flush();
@@ -186,20 +198,24 @@ public class Teller {
 				return false;
 			}
 
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid account number format: " + accountNum);
+			return false;
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error during deposit: " + e.getMessage());
 			return false;
 		}
 	}
 
-	// update account info
+	//update account info
 	public boolean updateAccount(String accountNum, String updateData) {
 		if (!connected) {
 			return false;
 		}
 
 		try {
-			Message updateMsg = new Message(request, updateAcc, tellerApp, accountNum, updateData);
+			int accountNumInt = Integer.parseInt(accountNum);
+			Message updateMsg = new Message(request, updateAcc, tellerApp, accountNumInt, updateData);
 
 			outputStream.writeObject(updateMsg);
 			outputStream.flush();
@@ -215,20 +231,54 @@ public class Teller {
 				return false;
 			}
 
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid account number format: " + accountNum);
+			return false;
 		} catch (IOException | ClassNotFoundException e) {
 			System.out.println("Error during account update: " + e.getMessage());
 			return false;
 		}
 	}
 
-	// update profile info
+	//create a new customer profile
+	public boolean createProfile(String name, String username, String password, long phone, String address, String email) {
+		if (!connected) {
+			return false;
+		}
+
+		try {
+			//format profile data as comma-separated string: name,username,password,phone,address,email
+			String profileData = name + "," + username + "," + password + "," + phone + "," + address + "," + email;
+			Message createMsg = new Message(request, updateProf, tellerApp, 0, "CREATE:" + profileData);
+
+			outputStream.writeObject(createMsg);
+			outputStream.flush();
+			System.out.println("Create profile request sent for: " + username);
+
+			Message response = (Message) inputStream.readObject();
+
+			if (response.getStatus() == MessageStatus.confirmation) {
+				System.out.println("Profile created successfully");
+				return true;
+			} else {
+				System.out.println("Profile creation failed: " + response.getText());
+				return false;
+			}
+
+		} catch (IOException | ClassNotFoundException e) {
+			System.out.println("Error during profile creation: " + e.getMessage());
+			return false;
+		}
+	}
+
+	//update profile info
 	public boolean updateProfile(String updateData) {
 		if (!connected) {
 			return false;
 		}
 
 		try {
-			Message updateMsg = new Message(request, updateProf, tellerApp, null, updateData);
+			Message updateMsg = new Message(request, updateProf, tellerApp, 0, updateData);
 
 			outputStream.writeObject(updateMsg);
 			outputStream.flush();
@@ -250,14 +300,14 @@ public class Teller {
 		}
 	}
 
-	// logout from teller session
+	//logout from teller session
 	public boolean logout() {
 		if (!connected) {
 			return false;
 		}
 
 		try {
-			Message logoutMsg = new Message(request, logout, tellerApp, null, "logout");
+			Message logoutMsg = new Message(request, logout, tellerApp, 0, "logout");
 
 			outputStream.writeObject(logoutMsg);
 			outputStream.flush();
@@ -279,7 +329,7 @@ public class Teller {
 		}
 	}
 
-	// close connection to server
+	//close connection to server
 	public void disconnect() {
 		try {
 			if (inputStream != null) inputStream.close();
@@ -292,12 +342,12 @@ public class Teller {
 		}
 	}
 
-	// getters
+	//getters
 	public Profile getCurrentProfile() {
 		return currentProfile;
 	}
 
-	// setters
+	//setters
 	public void setCurrentProfile(Profile profile) {
 		this.currentProfile = profile;
 	}

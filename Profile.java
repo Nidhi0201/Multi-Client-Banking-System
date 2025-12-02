@@ -3,7 +3,7 @@ package group3;
 import java.io.*;
 import java.util.ArrayList;
 
-public class Profile {
+public class Profile implements Serializable {
 	private String name;
 	private String username;
 	private String password;
