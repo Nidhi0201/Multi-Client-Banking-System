@@ -136,6 +136,7 @@ public class BankGUI {
 		menuFrame.setSize(400, 400);
 		menuFrame.setLocationRelativeTo(null);
 		menuFrame.setLayout(new BorderLayout());
+		
 
 		// title at top
 		JLabel title = new JLabel("Select an Option", JLabel.CENTER);
