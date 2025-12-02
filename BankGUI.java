@@ -386,10 +386,12 @@ public class BankGUI {
 		JTextField customerPass = new JTextField(20);
 		// CLB = customer login button
 		JButton CLB = new JButton("Customer Login");
+		JButton createProfile = new JButton("New Customer");
 		customerPanel.add(new JLabel("Customer Login"));
 		customerPanel.add(customerUser);
 		customerPanel.add(customerPass);
 		customerPanel.add(CLB);
+		customerPanel.add(createProfile);
 
 		login.add(customerPanel, BorderLayout.CENTER);
 
@@ -412,6 +414,13 @@ public class BankGUI {
 					// if customer login is not approved do nothing
 					JOptionPane.showMessageDialog(login, "Customer login failed");
 				}
+			}
+		});
+		
+		createProfile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// creates new profile object
+				
 			}
 		});
 

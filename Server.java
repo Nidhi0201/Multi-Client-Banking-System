@@ -76,7 +76,7 @@ class ClientHandler implements Runnable {
 			Application sender = Application.undefined;
 			Boolean loggedIn = false;
 
-			System.out.println("New Connection"); // TODO remove (or make graphical)
+			JOptionPane.showMessageDialog(null,"New Connection"); // TODO remove
 
 			// loop that listens for messages
 			while (true) {
