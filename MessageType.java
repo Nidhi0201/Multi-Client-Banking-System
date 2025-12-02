@@ -1,4 +1,4 @@
 package group3;
 
-public enum MessageType
-{ employeeLogin, customerLogin, logout, withdrawal, deposit, updateAccount,updateProfile, undefined}
+public enum MessageType 
+{ employeeLogin, customerLogin, logout, withdrawal, deposit, balance, updateAccount, updateProfile, undefined}

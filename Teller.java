@@ -363,4 +363,13 @@ public class Teller {
 	public void setCurrentProfile(Profile profile) {
 		this.currentProfile = profile;
 	}
+
+	// checks file for profile info returns null if invalid
+	public Profile findProfile(String user, String pass) {
+		Profile profile = null;
+
+		return profile;
+
+	}
+
 }
