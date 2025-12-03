@@ -10,16 +10,16 @@ import javax.swing.JOptionPane;
 
 
 public class Server {
-	private static File logFile = new File("log.txt");              // accountNum,type,message,date\n
-	private static File employeeFile = new File("employees.txt");   // username,password\n
-	private static File proFile = new File("profiles.txt");         // username,password,name,phone,address,email,creditScore,[num,num,num]\n
+	private static File logFile = new File("log.txt");
+	private static File employeeFile = new File("employees.txt");
+	private static File proFile = new File("profiles.txt");
 	// for access to one account at a time by the ATM
-	private static File accountFile = new File("accounts.txt");     // number,pin,type,balance,initialBalance
+	private static File accountFile = new File("accounts.txt");
 
 	public static void main(String args[]) throws IOException {
 
 		// make a server socket on the port number
-		try (ServerSocket ss = new ServerSocket(7777)) {
+		try (ServerSocket ss = new ServerSocket(777)) {
 
 			// confirmation message
 			System.out.println("Server is running ");
@@ -70,21 +70,15 @@ class ClientHandler implements Runnable {
 	public void run() {
 
 		try ( // create the object input and output streams on socket
-			var s = socket;
-      // IMPORTANT: Server reads first, so create InputStream before OutputStream to avoid deadlock
-      ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-      ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());) {
-          
-      // Store streams as instance variables for use in handler methods
+				Socket s = socket;
+				ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+				ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());) {
+
+			// Store streams as instance variables for use in handler methods
 			this.inputStream = in;
 			this.outputStream = out;
 
-			// create variables outside of loop
 			Message msg = null;
-			MessageType type = MessageType.undefined;
-			Application sender = Application.undefined;
-			boolean loggedIn = false;
-
 			JOptionPane.showMessageDialog(null, "New Connection");
 
 			// loop that listens for messages
