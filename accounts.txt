@@ -1,1 +1,3 @@
-Customer Accounts Stored Here:
+0000,0000,checking,0,0
+1111,1111,saving,200,200
+2222,2222,lineOfCredit,1000,1000
