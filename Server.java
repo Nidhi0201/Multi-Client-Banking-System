@@ -19,7 +19,7 @@ public class Server {
 	public static void main(String args[]) throws IOException {
 
 		// make a server socket on the port number
-		try (ServerSocket ss = new ServerSocket(777)) {
+		try (ServerSocket ss = new ServerSocket(7777)) {
 
 			// confirmation message
 			System.out.println("Server is running ");
