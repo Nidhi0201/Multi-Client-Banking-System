@@ -49,6 +49,7 @@ This banking system supports multiple access methods - ATM clients, Teller termi
 
 ## 📋 Project Structure
 
+```
 Multi-Client-Banking-System/
 ├── project/
 │   └── src/
@@ -80,6 +81,7 @@ Multi-Client-Banking-System/
 │   └── package.json
 ├── REST_API_SETUP.md                 # Web setup instructions
 └── Group3_SRS.docx                   # Software Requirements Specification
+```
 
 ## 🚀 Getting Started
 
@@ -93,17 +95,17 @@ Multi-Client-Banking-System/
 
 #### 1. Start the REST API Server
 
-bash
+```bash
 cd project
 ./COMPILE_AND_RUN_REST_API.sh
-
+```
 
 Or manually:
-bash
+```bash
 cd project
 javac --module-path . --add-modules com.google.gson -cp ".:gson-2.10.1.jar" -d bin src/group3/*.java src/module-info.java
 java --module-path ".:gson-2.10.1.jar" --add-modules com.google.gson -cp "bin:gson-2.10.1.jar" group3.RestApiServer
-
+```
 
 The REST API server will start on `http://localhost:8080`
 
