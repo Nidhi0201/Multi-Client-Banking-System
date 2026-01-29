@@ -29,6 +29,8 @@ public class LogEntry {
 	public static void appendToLog(File logFile, LogEntry entry) {
 		try (PrintWriter writer = new PrintWriter(new FileWriter(logFile, true))) {
 			writer.println(entry.toString());
+			// also echo logs to the server console for easy monitoring
+			System.out.println("[LOG] " + entry.toString());
 		} catch (IOException e) {
 			System.out.println("Error writing log entry: " + e.getMessage());
 		}
