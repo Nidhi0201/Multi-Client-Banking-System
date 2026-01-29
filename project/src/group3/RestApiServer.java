@@ -21,25 +21,42 @@ import com.sun.net.httpserver.HttpExchange;
  * Runs on port 8080 and exposes JSON endpoints.
  */
 public class RestApiServer {
-	private static File logFile = new File("src/group3/log.txt");
-	private static File employeeFile = new File("src/group3/employees.txt");
-	private static File proFile = new File("src/group3/profiles.txt");
-	private static File accountFile = new File("src/group3/accounts.txt");
+	// Data directory - uses DATA_DIR env var or defaults to src/group3
+	private static String dataDir = System.getenv("DATA_DIR") != null 
+		? System.getenv("DATA_DIR") 
+		: "src/group3";
+	
+	private static File logFile = new File(dataDir + "/log.txt");
+	private static File employeeFile = new File(dataDir + "/employees.txt");
+	private static File proFile = new File(dataDir + "/profiles.txt");
+	private static File accountFile = new File(dataDir + "/accounts.txt");
 	
 	private static Gson gson = new Gson();
 	// Store active sessions (in production, use proper session management)
 	private static Map<String, SessionData> sessions = new ConcurrentHashMap<>();
 	
 	public static void main(String[] args) throws IOException {
-		HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+		// Use PORT env var (for Railway/Render) or default to 8080
+		int port = 8080;
+		String envPort = System.getenv("PORT");
+		if (envPort != null && !envPort.isEmpty()) {
+			try {
+				port = Integer.parseInt(envPort);
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid PORT, using default 8080");
+			}
+		}
+		
+		HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 		
 		// Enable CORS for all routes
 		server.createContext("/api", new CorsHandler(new ApiHandler()));
 		
 		server.setExecutor(null);
 		server.start();
-		System.out.println("REST API Server running on http://localhost:8080");
+		System.out.println("REST API Server running on port " + port);
 		System.out.println("CORS enabled for web frontend");
+		System.out.println("Data directory: " + dataDir);
 	}
 	
 	// CORS wrapper to allow web frontend to call API
