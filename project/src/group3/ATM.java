@@ -21,8 +21,10 @@ public class ATM {
 	private ObjectInputStream inputStream;
 	private boolean connected = false;
 
-	// current account info
+	// current session state
 	private String currentAccountNum;
+	private Profile currentProfile;
+	private Account currentAccount;
 
 	public static void main(String args[]) throws IOException {
 		// prompt for an IP address; default will be 127.0.0.1
@@ -259,9 +261,28 @@ public class ATM {
 			}
 			connected = false;
 			currentAccountNum = null;
+			currentProfile = null;
+			currentAccount = null;
 			System.out.println("Disconnected from server");
 		} catch (IOException e) {
 			System.out.println("Error disconnecting: " + e.getMessage());
 		}
+	}
+
+	// additional getters/setters used in tests
+	public Profile getCurrentProfile() {
+		return currentProfile;
+	}
+
+	public void setCurrentProfile(Profile profile) {
+		this.currentProfile = profile;
+	}
+
+	public Account getCurrentAccount() {
+		return currentAccount;
+	}
+
+	public void setCurrentAccount(Account account) {
+		this.currentAccount = account;
 	}
 }

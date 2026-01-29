@@ -1,3 +1,4 @@
-user1,pass1,DEMO USER,1234567890,111 santa street,email@email.com,0,[]
+user1,pass1,DEMO USER,1234567890,111 santa street,email@email.com,0,[1212]
 user2,pass2,DEMO USER2,1234567890,222 street,email2@email2.com,400,[]
 user3,pass3,DEMO USER3,1234567890,333 street,email3@email3.com,400,[]
+nidhi0101,9090,Nidhi A Prajapati,123456669,123 Main City,nidhicd@gmail.com,4,[1211]

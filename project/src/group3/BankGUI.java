@@ -3,9 +3,9 @@ package group3;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.LayoutManager;
+import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Scanner;
@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.BorderFactory;
 
 // GUI object that can be used for an ATM or Teller Application
 public class BankGUI {
@@ -24,6 +25,15 @@ public class BankGUI {
 	Application application;
 	static Teller teller;
 	static ATM atm;
+
+	// Theme colors (red / blue / white)
+	private static final Color PRIMARY_BLUE = new Color(10, 36, 99);
+	private static final Color ACCENT_RED = new Color(220, 53, 69);
+	private static final Color BACKGROUND_DARK = new Color(15, 23, 42);
+	private static final Color TEXT_LIGHT = Color.WHITE;
+	private static final Font TITLE_FONT = new Font("Segoe UI", Font.BOLD, 28);
+	private static final Font SUBTITLE_FONT = new Font("Segoe UI", Font.BOLD, 20);
+	private static final Font BODY_FONT = new Font("Segoe UI", Font.PLAIN, 14);
 
 	// GUI constructor takes the application in use
 	public BankGUI(ATM atm, Teller teller) {
@@ -69,25 +79,34 @@ public class BankGUI {
 
 		// main panel with grid layout for components
 		JPanel mainPanel = new JPanel(new GridLayout(5, 1, 10, 10));
+		mainPanel.setBackground(BACKGROUND_DARK);
 		JLabel title = new JLabel("Welcome to ATM", JLabel.CENTER);
-		title.setFont(new Font("Arial", Font.BOLD, 24));
+		title.setFont(TITLE_FONT);
+		title.setForeground(TEXT_LIGHT);
 
 		// account number input
 		JPanel accountPanel = new JPanel(new FlowLayout());
-		accountPanel.add(new JLabel("Account Number:"));
+		accountPanel.setBackground(BACKGROUND_DARK);
+		JLabel accountLabel = new JLabel("Account Number:");
+		accountLabel.setForeground(TEXT_LIGHT);
+		accountPanel.add(accountLabel);
 		JTextField accountField = new JTextField(15);
 		accountPanel.add(accountField);
 
 		// PIN input
 		JPanel pinPanel = new JPanel(new FlowLayout());
-		pinPanel.add(new JLabel("PIN:                      "));
+		pinPanel.setBackground(BACKGROUND_DARK);
+		JLabel pinLabel = new JLabel("PIN:                      ");
+		pinLabel.setForeground(TEXT_LIGHT);
+		pinPanel.add(pinLabel);
 		JTextField pinField = new JTextField(15);
 		pinPanel.add(pinField);
 
 		// login and cancel buttons
 		JPanel buttonPanel = new JPanel(new FlowLayout());
-		JButton loginBtn = new JButton("Login");
-		JButton cancelBtn = new JButton("Cancel");
+		buttonPanel.setBackground(BACKGROUND_DARK);
+		JButton loginBtn = createPrimaryButton("Login");
+		JButton cancelBtn = createSecondaryButton("Cancel");
 		buttonPanel.add(loginBtn);
 		buttonPanel.add(cancelBtn);
 
@@ -136,19 +155,21 @@ public class BankGUI {
 		menuFrame.setSize(400, 400);
 		menuFrame.setLocationRelativeTo(null);
 		menuFrame.setLayout(new BorderLayout());
-		
+		menuFrame.getContentPane().setBackground(BACKGROUND_DARK);
 
 		// title at top
 		JLabel title = new JLabel("Select an Option", JLabel.CENTER);
-		title.setFont(new Font("Arial", Font.BOLD, 20));
+		title.setFont(SUBTITLE_FONT);
+		title.setForeground(TEXT_LIGHT);
 		menuFrame.add(title, BorderLayout.NORTH);
 
 		// four main option buttons
 		JPanel buttonPanel = new JPanel(new GridLayout(4, 1, 10, 10));
-		JButton balanceBtn = new JButton("Check Balance");
-		JButton withdrawBtn = new JButton("Withdraw");
-		JButton depositBtn = new JButton("Deposit");
-		JButton logoutBtn = new JButton("Logout");
+		buttonPanel.setBackground(BACKGROUND_DARK);
+		JButton balanceBtn = createPrimaryButton("Check Balance");
+		JButton withdrawBtn = createPrimaryButton("Withdraw");
+		JButton depositBtn = createPrimaryButton("Deposit");
+		JButton logoutBtn = createSecondaryButton("Logout");
 
 		buttonPanel.add(balanceBtn);
 		buttonPanel.add(withdrawBtn);
@@ -195,15 +216,18 @@ public class BankGUI {
 		withdrawFrame.setLayout(new BorderLayout());
 
 		JPanel mainPanel = new JPanel(new GridLayout(4, 1, 10, 10));
+		mainPanel.setBackground(BACKGROUND_DARK);
 		JLabel title = new JLabel("Enter Withdrawal Amount", JLabel.CENTER);
-		title.setFont(new Font("Arial", Font.BOLD, 18));
+		title.setFont(SUBTITLE_FONT);
+		title.setForeground(TEXT_LIGHT);
 
 		// quick amount buttons for common withdrawals
 		JPanel quickPanel = new JPanel(new FlowLayout());
-		JButton btn20 = new JButton("$20");
-		JButton btn40 = new JButton("$40");
-		JButton btn60 = new JButton("$60");
-		JButton btn100 = new JButton("$100");
+		quickPanel.setBackground(BACKGROUND_DARK);
+		JButton btn20 = createChipButton("$20");
+		JButton btn40 = createChipButton("$40");
+		JButton btn60 = createChipButton("$60");
+		JButton btn100 = createChipButton("$100");
 		quickPanel.add(btn20);
 		quickPanel.add(btn40);
 		quickPanel.add(btn60);
@@ -211,14 +235,18 @@ public class BankGUI {
 
 		// custom amount input
 		JPanel amountPanel = new JPanel(new FlowLayout());
-		amountPanel.add(new JLabel("Amount: $"));
+		amountPanel.setBackground(BACKGROUND_DARK);
+		JLabel amountLabel = new JLabel("Amount: $");
+		amountLabel.setForeground(TEXT_LIGHT);
+		amountPanel.add(amountLabel);
 		JTextField amountField = new JTextField(10);
 		amountPanel.add(amountField);
 
 		// confirm and cancel buttons
 		JPanel buttonPanel = new JPanel(new FlowLayout());
-		JButton confirmBtn = new JButton("Confirm");
-		JButton cancelBtn = new JButton("Cancel");
+		buttonPanel.setBackground(BACKGROUND_DARK);
+		JButton confirmBtn = createPrimaryButton("Confirm");
+		JButton cancelBtn = createSecondaryButton("Cancel");
 		buttonPanel.add(confirmBtn);
 		buttonPanel.add(cancelBtn);
 
@@ -269,19 +297,25 @@ public class BankGUI {
 		depositFrame.setLayout(new BorderLayout());
 
 		JPanel mainPanel = new JPanel(new GridLayout(3, 1, 10, 10));
+		mainPanel.setBackground(BACKGROUND_DARK);
 		JLabel title = new JLabel("Enter Deposit Amount", JLabel.CENTER);
-		title.setFont(new Font("Arial", Font.BOLD, 18));
+		title.setFont(SUBTITLE_FONT);
+		title.setForeground(TEXT_LIGHT);
 
 		// amount input
 		JPanel amountPanel = new JPanel(new FlowLayout());
-		amountPanel.add(new JLabel("Amount: $"));
+		amountPanel.setBackground(BACKGROUND_DARK);
+		JLabel amountLabel = new JLabel("Amount: $");
+		amountLabel.setForeground(TEXT_LIGHT);
+		amountPanel.add(amountLabel);
 		JTextField amountField = new JTextField(10);
 		amountPanel.add(amountField);
 
 		// confirm and cancel buttons
 		JPanel buttonPanel = new JPanel(new FlowLayout());
-		JButton confirmBtn = new JButton("Confirm");
-		JButton cancelBtn = new JButton("Cancel");
+		buttonPanel.setBackground(BACKGROUND_DARK);
+		JButton confirmBtn = createPrimaryButton("Confirm");
+		JButton cancelBtn = createSecondaryButton("Cancel");
 		buttonPanel.add(confirmBtn);
 		buttonPanel.add(cancelBtn);
 
@@ -319,7 +353,7 @@ public class BankGUI {
 	private static void employeeLogin() {
 
 		// create login screen frame
-		JFrame login = new JFrame("Login");
+		JFrame login = new JFrame("Teller Employee Login");
 		// frame closes by the X button
 		login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// height by width in pixels
@@ -331,11 +365,14 @@ public class BankGUI {
 		// create employee login screen panel + text fields
 		JPanel employeePanel = new JPanel();
 		employeePanel.setLayout(new FlowLayout());
+		employeePanel.setBackground(BACKGROUND_DARK);
 		JTextField employeeUser = new JTextField(20);
 		JTextField employeePass = new JTextField(20);
 		// ELB = employee login button
-		JButton ELB = new JButton("Employee Login");
-		employeePanel.add(new JLabel("Employee Login"));
+		JButton ELB = createPrimaryButton("Employee Login");
+		JLabel employeeLabel = new JLabel("Employee Login");
+		employeeLabel.setForeground(TEXT_LIGHT);
+		employeePanel.add(employeeLabel);
 		employeePanel.add(employeeUser);
 		employeePanel.add(employeePass);
 		employeePanel.add(ELB);
@@ -370,7 +407,7 @@ public class BankGUI {
 
 	public static void customerLogin() {
 		// create login screen frame
-		JFrame login = new JFrame("Login");
+		JFrame login = new JFrame("Teller Customer Login");
 		// frame closes by the X button
 		login.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// height by width in pixels
@@ -382,12 +419,15 @@ public class BankGUI {
 		// panel for customer login that starts invisible
 		JPanel customerPanel = new JPanel();
 		customerPanel.setLayout(new FlowLayout());
+		customerPanel.setBackground(BACKGROUND_DARK);
 		JTextField customerUser = new JTextField(20);
 		JTextField customerPass = new JTextField(20);
 		// CLB = customer login button
-		JButton CLB = new JButton("Customer Login");
-		JButton createProfile = new JButton("New Customer");
-		customerPanel.add(new JLabel("Customer Login"));
+		JButton CLB = createPrimaryButton("Customer Login");
+		JButton createProfile = createSecondaryButton("New Customer");
+		JLabel customerLabel = new JLabel("Customer Login");
+		customerLabel.setForeground(TEXT_LIGHT);
+		customerPanel.add(customerLabel);
 		customerPanel.add(customerUser);
 		customerPanel.add(customerPass);
 		customerPanel.add(CLB);
@@ -500,21 +540,24 @@ public class BankGUI {
 		// main panel with inital options
 		JPanel main = new JPanel();
 		main.setLayout(new BorderLayout());
+		main.setBackground(BACKGROUND_DARK);
 		// welcome header
 		JLabel welcome = new JLabel("Welcome " + profile.getName());
-		welcome.setFont(new Font("Arial", Font.BOLD, 30));
+		welcome.setFont(TITLE_FONT);
+		welcome.setForeground(TEXT_LIGHT);
 		// buttons and dropdown menu for viewing an account
-		JButton info = new JButton("View Profile Information");
-		JButton newAccount = new JButton("Add New Account");
-		JButton openAccount = new JButton("Open Existing Account");
+		JButton info = createPrimaryButton("View Profile Information");
+		JButton newAccount = createPrimaryButton("Add New Account");
+		JButton openAccount = createPrimaryButton("Open Existing Account");
 		final JComboBox<Object> selector = new JComboBox<>(accountMenu);
-		JButton logout = new JButton("logout");
+		JButton logout = createSecondaryButton("Logout");
 		selector.setSelectedIndex(0); // show default first
 		// add header at the north spot
 		main.add(welcome, BorderLayout.NORTH);
 
 		// panel with gridlayout for buttons, with specified rows and columns
 		JPanel buttons = new JPanel(new GridLayout(5, 1));
+		buttons.setBackground(BACKGROUND_DARK);
 		buttons.add(info);
 		buttons.add(newAccount);
 		buttons.add(openAccount);
@@ -527,6 +570,7 @@ public class BankGUI {
 
 		// Panel for profile info
 		JPanel infoPanel = new JPanel(new GridLayout(7, 2));
+		infoPanel.setBackground(BACKGROUND_DARK);
 		JLabel name = new JLabel("Name: " + profile.getName());
 		JLabel address = new JLabel("Address: " + profile.getAddress());
 		JLabel phone = new JLabel("Phone: " + profile.getPhone());
@@ -534,9 +578,15 @@ public class BankGUI {
 		JLabel score = new JLabel("Credit Score: " + profile.getCreditScore());
 		JLabel username = new JLabel("Username: " + profile.getUsername());
 		JLabel password = new JLabel("Password: " + profile.getPassword());
-		JButton update = new JButton("update personal info");
+
+		for (JLabel label : new JLabel[]{name, address, phone, email, score, username, password}) {
+			label.setForeground(TEXT_LIGHT);
+			label.setFont(BODY_FONT);
+		}
+
+		JButton update = createPrimaryButton("Update Personal Info");
 		// back button for info screen
-		JButton infoBack = new JButton("back");
+		JButton infoBack = createSecondaryButton("Back");
 		// String options for dropdown menu
 		String[] infoMenu = { "make a selection", "Name", "Address", "Phone", "Email", "Username", "Password" };
 		final JComboBox<String> options = new JComboBox<>(infoMenu);
@@ -556,16 +606,19 @@ public class BankGUI {
 		// Panel for creating a new account
 		JPanel createPanel = new JPanel();
 		createPanel.setLayout(new BorderLayout());
+		createPanel.setBackground(BACKGROUND_DARK);
 		JLabel message = new JLabel("Enter initial amount and select an account type");
+		message.setForeground(TEXT_LIGHT);
 		JTextField initBalance = new JTextField(11);
-		JButton checking = new JButton("Checking");
-		JButton saving = new JButton("Saving");
-		JButton loc = new JButton("Line of Credit");
+		JButton checking = createPrimaryButton("Checking");
+		JButton saving = createPrimaryButton("Saving");
+		JButton loc = createPrimaryButton("Line of Credit");
 		// back button for create screen
-		JButton createBack = new JButton("back");
+		JButton createBack = createSecondaryButton("Back");
 
 		// panel with gridlayout for buttons, with specified rows and columns
 		JPanel grid = new JPanel(new GridLayout(6, 1));
+		grid.setBackground(BACKGROUND_DARK);
 		grid.add(message);
 		grid.add(initBalance);
 		grid.add(checking);
@@ -577,19 +630,23 @@ public class BankGUI {
 
 		// Panel for viewing existing account
 		JPanel accountPanel = new JPanel();
+		accountPanel.setBackground(BACKGROUND_DARK);
 		JLabel number = new JLabel();
 		JLabel balance = new JLabel();
+		number.setForeground(TEXT_LIGHT);
+		balance.setForeground(TEXT_LIGHT);
 		JLabel instruction = new JLabel("to make a transaction, enter the amount and then select a transaction type");
-		JButton pin = new JButton("Change Pin");
-		JButton history = new JButton("View Account History");
-		JButton remove = new JButton("Remove this Account");
+		instruction.setForeground(TEXT_LIGHT);
+		JButton pin = createPrimaryButton("Change PIN");
+		JButton history = createPrimaryButton("View Account History");
+		JButton remove = createSecondaryButton("Remove this Account");
 		JTextField amount = new JTextField(11);
 		// set transactionMenu equal to new menu
 		String[] transactionMenu = { "select a transaction type", "Deposit", "Withdraw", "Transfer" };
 		JComboBox accOptions = new JComboBox<>(transactionMenu);
 		accOptions.setSelectedIndex(0); // shows prompt as default
-		JButton transaction = new JButton("Make Transaction");
-		JButton transactionBack = new JButton("back");
+		JButton transaction = createPrimaryButton("Make Transaction");
+		JButton transactionBack = createSecondaryButton("Back");
 		accountPanel.add(number);
 		accountPanel.add(balance);
 		accountPanel.add(pin);
@@ -659,8 +716,8 @@ public class BankGUI {
 			}
 		});
 
-		transaction.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+				transaction.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
 				int value = accOptions.getSelectedIndex();
 				if (value > 0) {
 
@@ -691,15 +748,29 @@ public class BankGUI {
 					}
 					Account acc = currentAccounts[index - 1];
 
-					// switch to call the methods on the account
+					// switch to call the methods via server (Teller) so operations are logged
 					switch (choice) {
 					case "Deposit":
-						acc.deposit(amt);
-						balance.setText("Balance: $" + acc.getBalance());
+						// perform server-side deposit and log it on the server
+						if (teller.deposit(String.valueOf(acc.getNum()), amt)) {
+							// update local model for UI only
+							acc.deposit(amt);
+							balance.setText("Balance: $" + acc.getBalance());
+						} else {
+							JOptionPane.showMessageDialog(profileFrame, "Deposit failed (server denied).");
+							return;
+						}
 						break;
 					case "Withdraw":
-						acc.withdraw(amt);
-						balance.setText("Balance: $" + acc.getBalance());
+						// perform server-side withdrawal and log it on the server
+						if (teller.withdraw(String.valueOf(acc.getNum()), amt)) {
+							// update local model for UI only
+							acc.withdraw(amt);
+							balance.setText("Balance: $" + acc.getBalance());
+						} else {
+							JOptionPane.showMessageDialog(profileFrame, "Withdrawal failed (insufficient funds or server error).");
+							return;
+						}
 						break;
 					case "Transfer":
 						// create an array for account number selection
@@ -734,7 +805,21 @@ public class BankGUI {
 							return;
 						}
 
-						// withdraw + deposit to make the transfer
+						// perform transfer via server so both sides are logged centrally
+						boolean withdrew = teller.withdraw(String.valueOf(From.getNum()), amt);
+						if (!withdrew) {
+							JOptionPane.showMessageDialog(profileFrame, "Transfer failed (could not withdraw from source account).");
+							return;
+						}
+
+						boolean deposited = teller.deposit(String.valueOf(To.getNum()), amt);
+						if (!deposited) {
+							JOptionPane.showMessageDialog(profileFrame, "Transfer failed when depositing to destination account.");
+							// optional: best-effort rollback could be attempted here
+							return;
+						}
+
+						// update local models for UI only
 						From.withdraw(amt);
 						To.deposit(amt);
 
@@ -1139,6 +1224,48 @@ public class BankGUI {
 		});
 
 		profileFrame.setVisible(true);
+	}
+
+	// ==== Styling helpers ====
+
+	private static JButton createPrimaryButton(String text) {
+		JButton button = new JButton(text);
+		button.setFocusPainted(false);
+		button.setFont(BODY_FONT);
+		button.setForeground(TEXT_LIGHT);
+		button.setBackground(ACCENT_RED);
+		button.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(Color.WHITE, 1),
+				BorderFactory.createEmptyBorder(6, 16, 6, 16)));
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		return button;
+	}
+
+	private static JButton createSecondaryButton(String text) {
+		JButton button = new JButton(text);
+		button.setFocusPainted(false);
+		button.setFont(BODY_FONT);
+		button.setForeground(TEXT_LIGHT);
+		button.setBackground(PRIMARY_BLUE);
+		button.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(Color.WHITE, 1),
+				BorderFactory.createEmptyBorder(6, 16, 6, 16)));
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		return button;
+	}
+
+	// Smaller pill-style button for quick actions (e.g., $20, $40)
+	private static JButton createChipButton(String text) {
+		JButton button = new JButton(text);
+		button.setFocusPainted(false);
+		button.setFont(BODY_FONT);
+		button.setForeground(TEXT_LIGHT);
+		button.setBackground(PRIMARY_BLUE);
+		button.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createLineBorder(ACCENT_RED, 1),
+				BorderFactory.createEmptyBorder(4, 12, 4, 12)));
+		button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		return button;
 	}
 
 }

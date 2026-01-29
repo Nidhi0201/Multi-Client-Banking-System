@@ -4,3 +4,51 @@ Bank Log Stored Here:2244,withdrawal,Withdrew 200.0. New balance: 100.0,2025-12-
 2246,deposit,Deposited 300.0. New balance: 600.0,2025-12-02T22:19:09.163540
 2246,deposit,Deposited 300.0. New balance: 600.0,2025-12-02T22:20:29.988914
 2247,deposit,Deposited 300.0. New balance: 600.0,2025-12-02T22:27:08.653515
+0,login,Teller logged in customer profile user1,2026-01-28T19:38:38.618783
+2223,deposit,Teller deposited 50.0, new balance updated in accounts file,2026-01-28T19:38:38.639313
+2223,login,ATM login successful,2026-01-28T19:38:38.643148
+2223,deposit,ATM deposited 25.0, new balance 275.0,2026-01-28T19:38:38.651242
+0,logout,ATM logout,2026-01-28T19:38:38.652425
+0,logout,Teller session logout,2026-01-28T19:38:38.653457
+0,login,Teller logged in customer profile user1,2026-01-28T19:41:20.875142
+2223,deposit,Teller deposited 50.0, new balance updated in accounts file,2026-01-28T19:41:20.902354
+2223,login,ATM login successful,2026-01-28T19:41:20.907715
+2223,deposit,ATM deposited 25.0, new balance 350.0,2026-01-28T19:41:20.915592
+0,logout,ATM logout,2026-01-28T19:41:20.916803
+0,logout,Teller session logout,2026-01-28T19:41:20.917322
+0,login,Teller logged in customer profile user1,2026-01-28T19:48:15.743514
+0,login,Teller logged in customer profile user1,2026-01-28T19:56:33.479442
+0,login,Teller logged in customer profile user1,2026-01-28T20:07:24.125506
+0,login,Employee login via REST API: employee1,2026-01-28T20:21:37.663622
+0,login,Customer login via REST API: user1,2026-01-28T20:22:18.290620
+0,logout,Logout via REST API,2026-01-28T20:25:34.589238
+0,login,Customer login via REST API: user1,2026-01-28T20:25:53.717040
+0,logout,Logout via REST API,2026-01-28T20:26:31.340607
+0,login,Employee login via REST API: employee1,2026-01-28T20:32:45.041081
+21221,updateAccount,REST API created account: checking with balance 799.0,2026-01-28T20:34:00.421577
+21221,updateAccount,REST API PIN update,2026-01-28T20:34:29.860494
+21221,withdrawal,REST API withdrawal: 7.0,2026-01-28T20:34:39.648752
+0,logout,Logout via REST API,2026-01-28T20:35:26.660361
+0,login,Customer login via REST API: user1,2026-01-28T20:35:34.630787
+0,login,Employee login via REST API: employee1,2026-01-28T20:56:03.366080
+1212,updateAccount,REST API created account: checking with balance 200.0,2026-01-28T20:56:32.867450
+1212,updateAccount,REST API linked account to profile: user1,2026-01-28T20:57:07.052309
+0,logout,Logout via REST API,2026-01-28T20:57:18.564699
+0,login,Customer login via REST API: user1,2026-01-28T20:57:25.280152
+0,logout,Logout via REST API,2026-01-28T20:57:51.497638
+0,login,Employee login via REST API: employee1,2026-01-28T21:02:28.066118
+0,logout,Logout via REST API,2026-01-28T21:02:39.678366
+0,login,Customer login via REST API: nidhi0101,2026-01-28T21:03:45.264747
+0,logout,Logout via REST API,2026-01-28T21:03:50.949484
+0,login,Employee login via REST API: employee1,2026-01-28T21:04:06.250270
+1211,updateAccount,REST API created account: checking with balance 300000.0,2026-01-28T21:04:31.488696
+1211,updateAccount,REST API linked account to profile: nidhi0101,2026-01-28T21:04:45.585202
+0,login,Employee login via REST API: employee1,2026-01-28T21:09:02.557836
+0,updateAccount,REST API updated profile: nidhi0101,2026-01-28T21:09:37.358290
+0,logout,Logout via REST API,2026-01-28T21:09:43.237321
+0,login,Customer login via REST API: nidhi0101,2026-01-28T21:10:02.945577
+0,login,ATM login via REST API,2026-01-28T21:18:48.237763
+0,logout,Logout via REST API,2026-01-28T21:19:05.262798
+0,login,Customer login via REST API: nidhi0101,2026-01-28T21:22:22.437241
+0,logout,Logout via REST API,2026-01-28T21:22:28.679808
+1211,login,ATM login via REST API,2026-01-28T21:23:15.954843

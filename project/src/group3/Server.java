@@ -79,7 +79,8 @@ class ClientHandler implements Runnable {
 			this.outputStream = out;
 
 			Message msg = null;
-			JOptionPane.showMessageDialog(null, "New Connection");
+			// In headless / server environments, avoid GUI popups – just log to console
+			System.out.println("New client connection established: " + socket.getRemoteSocketAddress());
 
 			// loop that listens for messages
 			while (true) {
@@ -156,46 +157,153 @@ class ClientHandler implements Runnable {
 			java.util.Scanner scanner = new java.util.Scanner(accountFile);
 			while (scanner.hasNextLine()) {
 				String[] data = scanner.nextLine().split(",");
-				if (data[0].equals(msg.getNum()) && data[1].equals(creds[1])) {
+				if (data.length >= 4 && data[0].equals(msg.getNum()) && data[1].equals(creds[1])) {
 					atmLoggedIn = true;
 					currentAccountNum = msg.getNum();
 					currentBalance = Double.parseDouble(data[3]);
 					sendResponse(MessageStatus.confirmation, "Login successful");
+					// log successful ATM login
+					LogEntry.appendToLog(logFile,
+							new LogEntry(Integer.parseInt(currentAccountNum), LogType.login,
+									"ATM login successful", java.time.LocalDateTime.now().toString()));
 					scanner.close();
 					return;
 				}
 			}
 			scanner.close();
 			sendResponse(MessageStatus.denial, "Invalid credentials");
+			// log failed ATM login
+			LogEntry.appendToLog(logFile,
+					new LogEntry(parseAccountNumSafe(msg.getNum()), LogType.login, "ATM login failed",
+							java.time.LocalDateTime.now().toString()));
 			break;
 
 		case withdrawal:
 			double withdrawAmt = Double.parseDouble(msg.getText());
+			if (!atmLoggedIn || currentAccountNum == null) {
+				sendResponse(MessageStatus.denial, "Not logged in");
+				break;
+			}
+			if (withdrawAmt <= 0) {
+				sendResponse(MessageStatus.denial, "Invalid amount");
+				break;
+			}
 			if (withdrawAmt <= currentBalance) {
-				currentBalance -= withdrawAmt;
-				sendResponse(MessageStatus.confirmation, "Withdrawn. Balance: $" + currentBalance);
+				double newBalance = currentBalance - withdrawAmt;
+				if (atmUpdateBalance(currentAccountNum, newBalance)) {
+					currentBalance = newBalance;
+					sendResponse(MessageStatus.confirmation, "Withdrawn. Balance: $" + currentBalance);
+					LogEntry.appendToLog(logFile,
+							new LogEntry(Integer.parseInt(currentAccountNum), LogType.withdrawal,
+									"ATM withdrew " + withdrawAmt + ", new balance " + currentBalance,
+									java.time.LocalDateTime.now().toString()));
+				} else {
+					sendResponse(MessageStatus.denial, "Server error");
+				}
 			} else {
 				sendResponse(MessageStatus.denial, "Insufficient funds");
 			}
 			break;
 
 		case deposit:
-			currentBalance += Double.parseDouble(msg.getText());
-			sendResponse(MessageStatus.confirmation, "Deposited. Balance: $" + currentBalance);
+			if (!atmLoggedIn || currentAccountNum == null) {
+				sendResponse(MessageStatus.denial, "Not logged in");
+				break;
+			}
+			double depositAmt = Double.parseDouble(msg.getText());
+			if (depositAmt <= 0) {
+				sendResponse(MessageStatus.denial, "Invalid amount");
+				break;
+			}
+			{
+				double newBalance = currentBalance + depositAmt;
+				if (atmUpdateBalance(currentAccountNum, newBalance)) {
+					currentBalance = newBalance;
+					sendResponse(MessageStatus.confirmation, "Deposited. Balance: $" + currentBalance);
+					LogEntry.appendToLog(logFile,
+							new LogEntry(Integer.parseInt(currentAccountNum), LogType.deposit,
+									"ATM deposited " + depositAmt + ", new balance " + currentBalance,
+									java.time.LocalDateTime.now().toString()));
+				} else {
+					sendResponse(MessageStatus.denial, "Server error");
+				}
+			}
 			break;
 
 		case logout:
 			atmLoggedIn = false;
+			currentAccountNum = null;
 			currentBalance = 0;
 			sendResponse(MessageStatus.confirmation, "Logged out");
+			LogEntry.appendToLog(logFile,
+					new LogEntry(0, LogType.logout, "ATM logout", java.time.LocalDateTime.now().toString()));
 			break;
 
 		default:
 			// Balance check
-			if (msg.getText().equals("balance")) {
-				sendResponse(MessageStatus.confirmation, String.valueOf(currentBalance));
+			if ("balance".equals(msg.getText())) {
+				if (!atmLoggedIn || currentAccountNum == null) {
+					sendResponse(MessageStatus.denial, "Not logged in");
+				} else {
+					sendResponse(MessageStatus.confirmation, String.valueOf(currentBalance));
+				}
 			}
 			break;
+		}
+	}
+
+	/**
+	 * Helper used by ATM operations to persist a new balance for the current
+	 * account back to the accounts file.
+	 */
+	private boolean atmUpdateBalance(String accountNum, double newBalance) {
+		boolean worked = false;
+		String[] lines = parse(accountFile);
+		if (lines == null) {
+			return false;
+		}
+
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			String[] info = line.split(",");
+			if (info.length < 4) {
+				continue;
+			}
+			if (!info[0].equals(accountNum)) {
+				continue;
+			}
+			// update balance field
+			info[3] = String.valueOf(newBalance);
+			lines[i] = String.join(",", info);
+			worked = true;
+			break;
+		}
+
+		if (!worked) {
+			return false;
+		}
+
+		try (PrintWriter write = new PrintWriter(accountFile)) {
+			for (String line : lines) {
+				write.println(line);
+			}
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+
+		return true;
+	}
+
+	// safely parse an account number string, returning 0 on failure
+	private int parseAccountNumSafe(String num) {
+		if (num == null) {
+			return 0;
+		}
+		try {
+			return Integer.parseInt(num);
+		} catch (NumberFormatException e) {
+			return 0;
 		}
 	}
 
@@ -265,76 +373,48 @@ class ClientHandler implements Runnable {
 	private void updateProfile(Message msg) {
 		// get the text from message
 		String text = msg.getText();
-		// split the attribute from the new value
-		String[] arr = text.split(",");
-		// parse the profile file to get the values
-		String[] lines = parse(proFile);
-		// data should not hold more than 8 attributes
-		String[] data = new String[8];
 
-		// split each line into data strings
-		for (String line : lines) {
-			data = line.split(",");
-		}
-
-		// username,password,name,phone,address,email,creditScore
-
-		switch (arr[0]) {
-		// if attribute is username
-		case "username":
-			// update username element
-			data[0] = arr[1];
-			break;
-
-		// if attribute is password
-		case "password":
-			// update the password element
-			data[1] = arr[1];
-
-			break;
-
-		case "name":
-			// update the name element
-			data[2] = arr[1];
-			break;
-
-		case "phone":
-			// update the phone element
-			data[3] = arr[1];
-			break;
-
-		case "address":
-			// update the address element
-			data[4] = arr[1];
-			break;
-
-		case "email":
-			// update the email element
-			data[5] = arr[1];
-			break;
-
-		default:
-			break;
-		}
-
-		// save changes to file
-
-		// try block to append a new profile line to the profiles file
-		try (PrintWriter write = new PrintWriter(proFile)) {
-			// for each line in lines
-			for (String line : lines) {
-				// write line to the file
-				write.println(line);
+		// CREATE path is used by Teller.createProfile(...)
+		if (text != null && text.startsWith("CREATE:")) {
+			String dataStr = text.substring("CREATE:".length());
+			// Expected order from Teller: name,username,password,phone,address,email
+			String[] parts = dataStr.split(",", 6);
+			if (parts.length < 6) {
+				// invalid payload
+				sendMessage(MessageType.updateProfile, MessageStatus.denial, null, "invalid");
+				return;
 			}
-		} catch (IOException e) {
-			// send denial if we could not write the new profile
-			sendMessage(MessageType.updateProfile, MessageStatus.denial, null, "error");
-			// return because we failed to create the profile
+
+			String name = parts[0];
+			String username = parts[1];
+			String password = parts[2];
+			String phone = parts[3];
+			String address = parts[4];
+			String email = parts[5];
+
+			// Default credit score and empty accounts list
+			String creditScore = "0";
+			String accounts = "[]";
+
+			// Append new profile line to profiles file in format:
+			// username,password,name,phone,address,email,creditScore,accounts
+			try (PrintWriter write = new PrintWriter(new FileWriter(proFile, true))) {
+				write.println(username + "," + password + "," + name + "," + phone + "," + address + "," + email + ","
+						+ creditScore + "," + accounts);
+			} catch (IOException e) {
+				// send denial if we could not write the new profile
+				sendMessage(MessageType.updateProfile, MessageStatus.denial, null, "error");
+				return;
+			}
+
+			// send confirmation that the profile was created successfully
+			sendMessage(MessageType.updateProfile, MessageStatus.confirmation, null, "valid");
 			return;
 		}
 
-		// send confirmation that the profile was created successfully
-		sendMessage(MessageType.updateProfile, MessageStatus.confirmation, null, "valid");
+		// For now, non-CREATE update requests are not supported via the server.
+		// (Profile updates are handled locally by Profile.saveToFile().)
+		sendMessage(MessageType.updateProfile, MessageStatus.denial, null, "unsupported");
 
 	}
 
@@ -361,6 +441,11 @@ class ClientHandler implements Runnable {
 		if (success) {
 			// send confirmation message to Teller
 			sendMessage(MessageType.updateAccount, MessageStatus.confirmation, accountNum, "valid");
+			// log PIN change on server
+			LogEntry.appendToLog(logFile,
+					new LogEntry(Integer.parseInt(accountNum), LogType.updateAccount,
+							"Teller changed PIN for account " + accountNum,
+							java.time.LocalDateTime.now().toString()));
 			// if helper returned false, update failed (e.g., account not found)
 		} else {
 			// send denial message to Teller
@@ -388,8 +473,8 @@ class ClientHandler implements Runnable {
 			}
 			// set the PIN field to the new value
 			info[1] = newPin;
-			// rebuild the updated line
-			lines[i] = "" + info;
+			// rebuild the updated line as CSV
+			lines[i] = String.join(",", info);
 			// mark that we updated an account
 			worked = true;
 			// break out of the loop now that we are done
@@ -441,6 +526,11 @@ class ClientHandler implements Runnable {
 		if (worked) {
 			// send confirmation back to Teller
 			sendMessage(MessageType.deposit, MessageStatus.confirmation, accountNum, "valid");
+			// log teller deposit on server
+			LogEntry.appendToLog(logFile,
+					new LogEntry(Integer.parseInt(accountNum), LogType.deposit,
+							"Teller deposited " + amount + ", new balance updated in accounts file",
+							java.time.LocalDateTime.now().toString()));
 
 		} else {
 			// send denial to Teller
@@ -466,12 +556,12 @@ class ClientHandler implements Runnable {
 				// if not move on
 				continue;
 			}
-			// if so try to withdraw from balance
+			// if so try to deposit to balance
 			try {
 				// get balance as double from info
 				double balance = Double.parseDouble(info[3]);
 				// if its a loc account
-				if (info[2] == "" + AccountType.lineOfCredit) {
+				if (info.length > 4 && info[2].equals(String.valueOf(AccountType.lineOfCredit))) {
 					double initBalance = Double.parseDouble(info[4]);
 					// balance + deposit cannot exceed initial balance
 					if (amount + Double.parseDouble(info[3]) > initBalance) {
@@ -485,8 +575,8 @@ class ClientHandler implements Runnable {
 				balance += amount;
 				// store updated balance as string
 				info[3] = "" + balance;
-				// put info back as a String
-				lines[i] = "" + info;
+				// put info back as a CSV String
+				lines[i] = String.join(",", info);
 				// note that a change was made
 				worked = true;
 				// break from for loop
@@ -545,6 +635,11 @@ class ClientHandler implements Runnable {
 		if (worked) {
 			// send confirmation back to Teller
 			sendMessage(MessageType.withdrawal, MessageStatus.confirmation, accountNum, "valid");
+			// log teller withdrawal on server
+			LogEntry.appendToLog(logFile,
+					new LogEntry(Integer.parseInt(accountNum), LogType.withdrawal,
+							"Teller withdrew " + amount + ", new balance updated in accounts file",
+							java.time.LocalDateTime.now().toString()));
 			// if helper returned false, withdrawal failed (insufficient funds or account
 			// not found)
 		} else {
@@ -585,8 +680,8 @@ class ClientHandler implements Runnable {
 				balance -= amount;
 				// store updated balance as string
 				info[3] = "" + balance;
-				// put info back as a String
-				lines[i] = "" + info;
+				// put info back as a CSV String
+				lines[i] = String.join(",", info);
 
 				// note that change was made
 				worked = true;
@@ -623,6 +718,10 @@ class ClientHandler implements Runnable {
 	private void logout(Message msg) {
 		// send a logout confirmation
 		sendMessage(MessageType.logout, MessageStatus.confirmation, null, "logout");
+		// log teller logout (no specific account)
+		LogEntry.appendToLog(logFile,
+				new LogEntry(0, LogType.logout, "Teller session logout",
+						java.time.LocalDateTime.now().toString()));
 	}
 
 	private void customerLogin(Message msg) {
@@ -659,6 +758,11 @@ class ClientHandler implements Runnable {
 			if (user.equals(fields[0]) && pass.equals(fields[1])) {
 				// confirmation to Teller
 				sendMessage(MessageType.customerLogin, MessageStatus.confirmation, null, "valid");
+				// log customer login via teller
+				LogEntry.appendToLog(logFile,
+						new LogEntry(0, LogType.login,
+								"Teller logged in customer profile " + user,
+								java.time.LocalDateTime.now().toString()));
 				
 				// parse profile data from this line
 				// Format: username,password,name,phone,address,email,creditScore,accounts
