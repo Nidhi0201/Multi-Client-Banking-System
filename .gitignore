@@ -1,0 +1,33 @@
+# ---- OS junk ----
+.DS_Store
+**/.DS_Store
+
+# ---- Secrets / env ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- Java build output ----
+bin/
+*.class
+
+# ---- Node / Next.js (web-ui) ----
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# ---- Eclipse / IDE ----
+.settings/
+*.iml
+.idea/
+
+# ---- Logs ----
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
